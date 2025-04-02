@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.Models;
+﻿using DataAccessLayer.Enums;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,6 +44,10 @@ public partial class NordicBankAppDataContext : IdentityDbContext
 
             entity.Property(e => e.Balance).HasColumnType("decimal(13, 2)");
             entity.Property(e => e.Frequency).HasMaxLength(50);
+            entity.Property(e => e.AccountStatus)
+                    .HasConversion<string>()
+                    .HasMaxLength(50)
+                    .HasDefaultValue(AccountStatus.Active);
         });
 
         modelBuilder.Entity<Card>(entity =>
@@ -78,6 +83,10 @@ public partial class NordicBankAppDataContext : IdentityDbContext
             entity.Property(e => e.Telephonecountrycode).HasMaxLength(10);
             entity.Property(e => e.Telephonenumber).HasMaxLength(25);
             entity.Property(e => e.Zipcode).HasMaxLength(15);
+            entity.Property(e => e.CustomerStatus)
+                    .HasConversion<string>()
+                    .HasMaxLength(50)
+                    .HasDefaultValue(CustomerStatus.Active);
         });
 
         modelBuilder.Entity<Disposition>(entity =>
