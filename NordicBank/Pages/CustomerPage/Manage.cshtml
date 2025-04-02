@@ -13,67 +13,94 @@
         <form method="post">
             <input type="hidden" asp-for="Customer.CustomerId" />
 
-            <div class="row g-3">
-                <!-- 📦 Kolumn 1 -->
+            <div class="row g-4">
+                <!-- 🡩 Kundinformation (vänster) -->
                 <div class="col-md-6">
-                    <label asp-for="Customer.Givenname" class="form-label"></label>
-                    <input asp-for="Customer.Givenname" class="form-control" />
-                    <span asp-validation-for="Customer.Givenname" class="text-danger"></span>
-
-                    <label asp-for="Customer.Surname" class="form-label mt-3"></label>
-                    <input asp-for="Customer.Surname" class="form-control" />
-                    <span asp-validation-for="Customer.Surname" class="text-danger"></span>
-
-                    <label asp-for="Customer.Streetaddress" class="form-label mt-3"></label>
-                    <input asp-for="Customer.Streetaddress" class="form-control" />
-
-                    <label asp-for="Customer.Zipcode" class="form-label mt-3"></label>
-                    <input asp-for="Customer.Zipcode" class="form-control" />
-
-                    <label asp-for="Customer.City" class="form-label mt-3"></label>
-                    <input asp-for="Customer.City" class="form-control" />
+                    <div class="mb-3">
+                        <label asp-for="Customer.Givenname" class="form-label"></label>
+                        <input asp-for="Customer.Givenname" class="form-control" />
+                        <span asp-validation-for="Customer.Givenname" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Customer.Surname" class="form-label"></label>
+                        <input asp-for="Customer.Surname" class="form-control" />
+                        <span asp-validation-for="Customer.Surname" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Customer.Streetaddress" class="form-label"></label>
+                        <input asp-for="Customer.Streetaddress" class="form-control" />
+                        <span asp-validation-for="Customer.Streetaddress" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Customer.Zipcode" class="form-label"></label>
+                        <input asp-for="Customer.Zipcode" class="form-control" />
+                        <span asp-validation-for="Customer.Zipcode" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Customer.City" class="form-label"></label>
+                        <input asp-for="Customer.City" class="form-control" />
+                        <span asp-validation-for="Customer.City" class="text-danger"></span>
+                    </div>
                 </div>
 
-                <!-- 🧾 Kolumn 2 -->
+                <!-- 🛌 Kontaktinformation (höger) -->
                 <div class="col-md-6">
-                    <label asp-for="Customer.Country" class="form-label"></label>
-                    <input asp-for="Customer.Country" class="form-control" />
-
-                    <label asp-for="Customer.CountryCode" class="form-label mt-3"></label>
-                    <input asp-for="Customer.CountryCode" class="form-control" />
-
-                    <label asp-for="Customer.Emailaddress" class="form-label mt-3"></label>
-                    <input asp-for="Customer.Emailaddress" class="form-control" />
-
-                    <label asp-for="Customer.Telephonecountrycode" class="form-label mt-3"></label>
-                    <input asp-for="Customer.Telephonecountrycode" class="form-control" />
-
-                    <label asp-for="Customer.Telephonenumber" class="form-label mt-3"></label>
-                    <input asp-for="Customer.Telephonenumber" class="form-control" />
+                    <div class="mb-3">
+                        <label asp-for="Customer.Country" class="form-label"></label>
+                        <input asp-for="Customer.Country" class="form-control" />
+                        <span asp-validation-for="Customer.Country" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Customer.CountryCode" class="form-label"></label>
+                        <input asp-for="Customer.CountryCode" class="form-control" />
+                        <span asp-validation-for="Customer.CountryCode" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Customer.Emailaddress" class="form-label"></label>
+                        <input asp-for="Customer.Emailaddress" class="form-control" />
+                        <span asp-validation-for="Customer.Emailaddress" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Customer.Telephonecountrycode" class="form-label"></label>
+                        <input asp-for="Customer.Telephonecountrycode" class="form-control" />
+                        <span asp-validation-for="Customer.Telephonecountrycode" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Customer.Telephonenumber" class="form-label"></label>
+                        <input asp-for="Customer.Telephonenumber" class="form-control" />
+                        <span asp-validation-for="Customer.Telephonenumber" class="text-danger"></span>
+                    </div>
                 </div>
 
-                <!-- 🧩 Full bredd -->
+                <!-- Fullbreddsrad -->
                 <div class="col-md-6">
-                    <label asp-for="Customer.Gender" class="form-label"></label>
-                    <select asp-for="Customer.Gender" class="form-select">
-                        <option value="">Select Gender</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>Other</option>
-                    </select>
+                    <div class="mb-3">
+                        <label asp-for="Customer.Gender" class="form-label"></label>
+                        <select asp-for="Customer.Gender" class="form-select">
+                            <option value="">Select Gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                        <span asp-validation-for="Customer.Gender" class="text-danger"></span>
+                    </div>
                 </div>
-
                 <div class="col-md-6">
-                    <label asp-for="Customer.Birthday" class="form-label"></label>
-                    <input asp-for="Customer.Birthday" class="form-control" type="date" />
+                    <div class="mb-3">
+                        <label asp-for="Customer.Birthday" class="form-label"></label>
+                        <input asp-for="Customer.Birthday" class="form-control" type="date" />
+                        <span asp-validation-for="Customer.Birthday" class="text-danger"></span>
+                    </div>
                 </div>
-
                 <div class="col-md-12">
-                    <label asp-for="Customer.NationalId" class="form-label"></label>
-                    <input asp-for="Customer.NationalId" class="form-control" />
+                    <div class="mb-3">
+                        <label asp-for="Customer.NationalId" class="form-label"></label>
+                        <input asp-for="Customer.NationalId" class="form-control" />
+                        <span asp-validation-for="Customer.NationalId" class="text-danger"></span>
+                    </div>
                 </div>
 
-                <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                <div class="col-12 d-flex justify-content-end gap-2">
                     <a asp-page="./Index" class="btn btn-outline-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">💾 Save</button>
                 </div>
