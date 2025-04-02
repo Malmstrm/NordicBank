@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DataAccessLayer.Enums;
 
 namespace DataAccessLayer.Models;
 
@@ -20,4 +19,6 @@ public partial class Account
     public virtual ICollection<PermenentOrder> PermenentOrders { get; set; } = new List<PermenentOrder>();
 
     public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+
+    public AccountStatus AccountStatus { get; set; }
 }

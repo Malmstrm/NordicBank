@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DataAccessLayer.Enums;
 
 namespace DataAccessLayer.Models;
 
@@ -34,4 +33,6 @@ public partial class Customer
     public string? Emailaddress { get; set; }
 
     public virtual ICollection<Disposition> Dispositions { get; set; } = new List<Disposition>();
+
+    public CustomerStatus CustomerStatus { get; set; }
 }
