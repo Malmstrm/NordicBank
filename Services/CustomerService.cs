@@ -1,15 +1,10 @@
 ﻿using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services
 {
-    public class CustomerService:ICustomerService
+    public class CustomerService : ICustomerService
     {
         private readonly NordicBankAppDataContext _dbContext;
         public CustomerService(NordicBankAppDataContext dbContext)
