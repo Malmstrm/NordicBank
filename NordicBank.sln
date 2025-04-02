@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NordicBank", "NordicBank\No
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{B6FD7245-D737-4971-BBF8-A370AE096EBA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{7E8675BF-C7DD-489C-A9CD-5D30A346CFBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B6FD7245-D737-4971-BBF8-A370AE096EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6FD7245-D737-4971-BBF8-A370AE096EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6FD7245-D737-4971-BBF8-A370AE096EBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E8675BF-C7DD-489C-A9CD-5D30A346CFBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E8675BF-C7DD-489C-A9CD-5D30A346CFBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E8675BF-C7DD-489C-A9CD-5D30A346CFBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E8675BF-C7DD-489C-A9CD-5D30A346CFBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
