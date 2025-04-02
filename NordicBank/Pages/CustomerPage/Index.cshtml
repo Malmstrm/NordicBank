@@ -48,7 +48,9 @@
                         <td>@c.Streetaddress</td>
                         <td>@c.City</td>
                         <td>@c.NationalId</td>
-                        <td></td>
+                        <td>
+                            <a asp-page="./Details" asp-route-id="@c.CustomerId" class="btn btn-sm btn-info">Details</a>
+                        </td>
                     </tr>
                 }
             </tbody>
