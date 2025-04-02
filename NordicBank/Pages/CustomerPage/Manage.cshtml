@@ -1,0 +1,87 @@
+﻿@page "{id?}"
+@model NordicBank.Pages.CustomerPage.ManageModel
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit Customer" : "Create Customer";
+}
+
+<div class="card mt-4 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">@ViewData["Title"]</h5>
+        <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">← Back to list</a>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <input type="hidden" asp-for="Customer.CustomerId" />
+
+            <div class="row g-3">
+                <!-- 📦 Kolumn 1 -->
+                <div class="col-md-6">
+                    <label asp-for="Customer.Givenname" class="form-label"></label>
+                    <input asp-for="Customer.Givenname" class="form-control" />
+                    <span asp-validation-for="Customer.Givenname" class="text-danger"></span>
+
+                    <label asp-for="Customer.Surname" class="form-label mt-3"></label>
+                    <input asp-for="Customer.Surname" class="form-control" />
+                    <span asp-validation-for="Customer.Surname" class="text-danger"></span>
+
+                    <label asp-for="Customer.Streetaddress" class="form-label mt-3"></label>
+                    <input asp-for="Customer.Streetaddress" class="form-control" />
+
+                    <label asp-for="Customer.Zipcode" class="form-label mt-3"></label>
+                    <input asp-for="Customer.Zipcode" class="form-control" />
+
+                    <label asp-for="Customer.City" class="form-label mt-3"></label>
+                    <input asp-for="Customer.City" class="form-control" />
+                </div>
+
+                <!-- 🧾 Kolumn 2 -->
+                <div class="col-md-6">
+                    <label asp-for="Customer.Country" class="form-label"></label>
+                    <input asp-for="Customer.Country" class="form-control" />
+
+                    <label asp-for="Customer.CountryCode" class="form-label mt-3"></label>
+                    <input asp-for="Customer.CountryCode" class="form-control" />
+
+                    <label asp-for="Customer.Emailaddress" class="form-label mt-3"></label>
+                    <input asp-for="Customer.Emailaddress" class="form-control" />
+
+                    <label asp-for="Customer.Telephonecountrycode" class="form-label mt-3"></label>
+                    <input asp-for="Customer.Telephonecountrycode" class="form-control" />
+
+                    <label asp-for="Customer.Telephonenumber" class="form-label mt-3"></label>
+                    <input asp-for="Customer.Telephonenumber" class="form-control" />
+                </div>
+
+                <!-- 🧩 Full bredd -->
+                <div class="col-md-6">
+                    <label asp-for="Customer.Gender" class="form-label"></label>
+                    <select asp-for="Customer.Gender" class="form-select">
+                        <option value="">Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Customer.Birthday" class="form-label"></label>
+                    <input asp-for="Customer.Birthday" class="form-control" type="date" />
+                </div>
+
+                <div class="col-md-12">
+                    <label asp-for="Customer.NationalId" class="form-label"></label>
+                    <input asp-for="Customer.NationalId" class="form-control" />
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">💾 Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

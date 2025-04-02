@@ -1,5 +1,6 @@
 ﻿using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
+using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services
@@ -12,6 +13,55 @@ namespace Services
             _dbContext = dbContext;
         }
 
+        public async Task<CustomerDTO> CreateAsync(CustomerDTO dto)
+        {
+            var customer = new Customer
+            {
+                Gender = dto.Gender,
+                Givenname = dto.Givenname,
+                Surname = dto.Surname,
+                Streetaddress = dto.Streetaddress,
+                City = dto.City,
+                Zipcode = dto.Zipcode,
+                Country = dto.Country,
+                CountryCode = dto.CountryCode,
+                Birthday = dto.Birthday,
+                NationalId = dto.NationalId,
+                Telephonecountrycode = dto.Telephonecountrycode,
+                Telephonenumber = dto.Telephonenumber,
+                Emailaddress = dto.Emailaddress,
+                CustomerStatus = DataAccessLayer.Enums.CustomerStatus.Active,
+            };
+
+            _dbContext.Customers.Add(customer);
+            await _dbContext.SaveChangesAsync();
+
+            return dto;
+        }
+        public async Task<CustomerDTO> UpdateAsync(CustomerDTO dto)
+        {
+            var customer = await _dbContext.Customers.FindAsync(dto.CustomerId);
+            if (customer == null) return null!;
+
+            customer.Gender = dto.Gender;
+            customer.Givenname = dto.Givenname;
+            customer.Surname = dto.Surname;
+            customer.Streetaddress = dto.Streetaddress;
+            customer.City = dto.City;
+            customer.Zipcode = dto.Zipcode;
+            customer.Country = dto.Country;
+            customer.CountryCode = dto.CountryCode;
+            customer.Birthday = dto.Birthday;
+            customer.NationalId = dto.NationalId;
+            customer.Telephonecountrycode = dto.Telephonecountrycode;
+            customer.Telephonenumber = dto.Telephonenumber;
+            customer.Emailaddress = dto.Emailaddress;
+            customer.CustomerStatus = dto.Status;
+
+            await _dbContext.SaveChangesAsync();
+
+            return dto;
+        }
         public async Task<CustomerDTO?> GetByIdAsyn(int customerId)
         {
             return await _dbContext.Customers
@@ -51,5 +101,7 @@ namespace Services
 
                 }).ToListAsync();
         }
+
+
     }
 }
