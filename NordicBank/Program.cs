@@ -1,6 +1,7 @@
 using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddRazorPages();
 
 builder.Services.AddTransient<DataInitializer>();
+
+builder.Services.AddTransient<ICustomerService, CustomerService>();
 
 var app = builder.Build();
 

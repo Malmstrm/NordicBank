@@ -12,8 +12,30 @@
     </div>
 
     <div class="card-body">
-
-   
-
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>NationalId</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.Customers)
+                {
+                    <tr>
+                        <td>@c.CustomerId</td>
+                        <td>@c.Givenname</td>
+                        <td>@c.Streetaddress</td>
+                        <td>@c.City</td>
+                        <td>@c.NationalId</td>
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
