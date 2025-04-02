@@ -36,6 +36,8 @@ namespace Services
             _dbContext.Customers.Add(customer);
             await _dbContext.SaveChangesAsync();
 
+            dto.CustomerId = customer.CustomerId;
+
             return dto;
         }
         public async Task<CustomerDTO> UpdateAsync(CustomerDTO dto)
