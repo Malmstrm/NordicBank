@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using NordicBank.Infrastructure.Paging.Country;
 using NordicBank.ViewModels;
 using Services;
 
@@ -19,10 +20,13 @@ namespace NordicBank.Pages.CustomerPage
         }
         [BindProperty]
         public CustomerViewModel Customer { get; set; }
+        public List<CountryInfo> Countries { get; set; }
         public bool IsEdit => Customer.CustomerId > 0;
         
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            Countries = CountryInfo.All;
+
             if (id == null)
                 Customer = new CustomerViewModel();
             else

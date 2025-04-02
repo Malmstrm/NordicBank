@@ -14,7 +14,7 @@
             <input type="hidden" asp-for="Customer.CustomerId" />
 
             <div class="row g-4">
-                <!-- 🡩 Kundinformation (vänster) -->
+                <!-- 🧍 Vänsterkolumn -->
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label asp-for="Customer.Givenname" class="form-label"></label>
@@ -41,39 +41,11 @@
                         <input asp-for="Customer.City" class="form-control" />
                         <span asp-validation-for="Customer.City" class="text-danger"></span>
                     </div>
-                </div>
-
-                <!-- 🛌 Kontaktinformation (höger) -->
-                <div class="col-md-6">
                     <div class="mb-3">
-                        <label asp-for="Customer.Country" class="form-label"></label>
-                        <input asp-for="Customer.Country" class="form-control" />
-                        <span asp-validation-for="Customer.Country" class="text-danger"></span>
+                        <label asp-for="Customer.Birthday" class="form-label"></label>
+                        <input asp-for="Customer.Birthday" class="form-control" type="date" />
+                        <span asp-validation-for="Customer.Birthday" class="text-danger"></span>
                     </div>
-                    <div class="mb-3">
-                        <label asp-for="Customer.CountryCode" class="form-label"></label>
-                        <input asp-for="Customer.CountryCode" class="form-control" />
-                        <span asp-validation-for="Customer.CountryCode" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Customer.Emailaddress" class="form-label"></label>
-                        <input asp-for="Customer.Emailaddress" class="form-control" />
-                        <span asp-validation-for="Customer.Emailaddress" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Customer.Telephonecountrycode" class="form-label"></label>
-                        <input asp-for="Customer.Telephonecountrycode" class="form-control" />
-                        <span asp-validation-for="Customer.Telephonecountrycode" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="Customer.Telephonenumber" class="form-label"></label>
-                        <input asp-for="Customer.Telephonenumber" class="form-control" />
-                        <span asp-validation-for="Customer.Telephonenumber" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <!-- Fullbreddsrad -->
-                <div class="col-md-6">
                     <div class="mb-3">
                         <label asp-for="Customer.Gender" class="form-label"></label>
                         <select asp-for="Customer.Gender" class="form-select">
@@ -85,14 +57,49 @@
                         <span asp-validation-for="Customer.Gender" class="text-danger"></span>
                     </div>
                 </div>
+
+                <!-- ☎️ Högerkolumn -->
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label asp-for="Customer.Birthday" class="form-label"></label>
-                        <input asp-for="Customer.Birthday" class="form-control" type="date" />
-                        <span asp-validation-for="Customer.Birthday" class="text-danger"></span>
+                        <label asp-for="Customer.Country" class="form-label"></label>
+                        <select asp-for="Customer.Country" class="form-select" id="countryDropdown">
+                            <option value="">-- Choose country --</option>
+                            @foreach (var c in Model.Countries)
+                            {
+                                <option value="@c.Name"
+                                        data-country-code="@c.CountryCode"
+                                        data-phone-code="@c.PhoneCode"
+                                        selected="@(Model.Customer.Country == c.Name)">
+                                    @c.Name
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="Customer.Country" class="text-danger"></span>
                     </div>
-                </div>
-                <div class="col-md-12">
+
+                    <div class="mb-3">
+                        <label asp-for="Customer.CountryCode" class="form-label">Country Code 🔒</label>
+                        <input asp-for="Customer.CountryCode" id="Customer_CountryCode" class="form-control bg-light" readonly />
+                        <span asp-validation-for="Customer.CountryCode" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Customer.Emailaddress" class="form-label"></label>
+                        <input asp-for="Customer.Emailaddress" class="form-control" />
+                        <span asp-validation-for="Customer.Emailaddress" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone Code 🔒</label>
+                        <input asp-for="Customer.Telephonecountrycode" id="Customer_Telephonecountrycode" class="form-control bg-light" readonly />
+                        <span asp-validation-for="Customer.Telephonecountrycode" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Customer.Telephonenumber" class="form-label"></label>
+                        <input asp-for="Customer.Telephonenumber" class="form-control" />
+                        <span asp-validation-for="Customer.Telephonenumber" class="text-danger"></span>
+                    </div>
                     <div class="mb-3">
                         <label asp-for="Customer.NationalId" class="form-label"></label>
                         <input asp-for="Customer.NationalId" class="form-control" />
@@ -100,7 +107,8 @@
                     </div>
                 </div>
 
-                <div class="col-12 d-flex justify-content-end gap-2">
+                <!-- ✅ Submit -->
+                <div class="col-12 d-flex justify-content-end gap-2 mt-2">
                     <a asp-page="./Index" class="btn btn-outline-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">💾 Save</button>
                 </div>
@@ -111,4 +119,14 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("countryDropdown").addEventListener("change", function () {
+            const selectedOption = this.selectedOptions[0];
+            const countryCode = selectedOption.getAttribute("data-country-code");
+            const phoneCode = selectedOption.getAttribute("data-phone-code");
+
+            document.getElementById("Customer_CountryCode").value = countryCode;
+            document.getElementById("Customer_Telephonecountrycode").value = phoneCode;
+        });
+    </script>
 }
