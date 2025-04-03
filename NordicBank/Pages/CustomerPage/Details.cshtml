@@ -15,23 +15,23 @@
             <div class="col-md-6">
                 <dl class="row">
                     <dt class="col-sm-4">Customer ID</dt>
-                    <dd class="col-sm-8">@Model.Customers.CustomerId</dd>
+                    <dd class="col-sm-8">@Model.Customer.CustomerId</dd>
 
                     <dt class="col-sm-4">First Name</dt>
-                    <dd class="col-sm-8">@Model.Customers.Givenname</dd>
+                    <dd class="col-sm-8">@Model.Customer.Givenname</dd>
 
                     <dt class="col-sm-4">Last Name</dt>
-                    <dd class="col-sm-8">@Model.Customers.Surname</dd>
+                    <dd class="col-sm-8">@Model.Customer.Surname</dd>
 
                     <dt class="col-sm-4">Gender</dt>
-                    <dd class="col-sm-8">@Model.Customers.Gender</dd>
+                    <dd class="col-sm-8">@Model.Customer.Gender</dd>
 
                     <dt class="col-sm-4">Birthday</dt>
-                    <dd class="col-sm-8">@Model.Customers.Birthday?.ToString("yyyy-MM-dd")</dd>
+                    <dd class="col-sm-8">@Model.Customer.Birthday?.ToString("yyyy-MM-dd")</dd>
 
                     <dt class="col-sm-4">Status</dt>
                     <dd class="col-sm-8">
-                        @switch (Model.Customers.Status)
+                        @switch (Model.Customer.Status)
                         {
                             case DataAccessLayer.Enums.CustomerStatus.Active:
                                 <span class="badge bg-success">✅ Active</span>
@@ -59,53 +59,53 @@
             <div class="col-md-6">
                 <dl class="row">
                     <dt class="col-sm-4">Street Address</dt>
-                    <dd class="col-sm-8">@Model.Customers.Streetaddress</dd>
+                    <dd class="col-sm-8">@Model.Customer.Streetaddress</dd>
 
                     <dt class="col-sm-4">City</dt>
-                    <dd class="col-sm-8">@Model.Customers.City</dd>
+                    <dd class="col-sm-8">@Model.Customer.City</dd>
 
                     <dt class="col-sm-4">Zip Code</dt>
-                    <dd class="col-sm-8">@Model.Customers.Zipcode</dd>
+                    <dd class="col-sm-8">@Model.Customer.Zipcode</dd>
 
                     <dt class="col-sm-4">Country</dt>
-                    <dd class="col-sm-8">@Model.Customers.Country</dd>
+                    <dd class="col-sm-8">@Model.Customer.Country</dd>
 
                     <dt class="col-sm-4">Country Code</dt>
-                    <dd class="col-sm-8">@Model.Customers.CountryCode</dd>
+                    <dd class="col-sm-8">@Model.Customer.CountryCode</dd>
 
                     <dt class="col-sm-4">National ID</dt>
-                    <dd class="col-sm-8">@Model.Customers.NationalId</dd>
+                    <dd class="col-sm-8">@Model.Customer.NationalId</dd>
 
                     <dt class="col-sm-4">Telephone</dt>
-                    <dd class="col-sm-8">+@Model.Customers.Telephonecountrycode @Model.Customers.Telephonenumber</dd>
+                    <dd class="col-sm-8">+@Model.Customer.Telephonecountrycode @Model.Customer.Telephonenumber</dd>
 
                     <dt class="col-sm-4">Email</dt>
-                    <dd class="col-sm-8">@Model.Customers.Emailaddress</dd>
+                    <dd class="col-sm-8">@Model.Customer.Emailaddress</dd>
                 </dl>
             </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="mt-4 d-flex flex-wrap justify-content-end gap-2">
-            <a asp-page="./Manage" asp-route-id="@Model.Customers.CustomerId" class="btn btn-primary">✏️ Edit</a>
-            <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Customers.CustomerId" onsubmit="return confirm('Are you sure you want to delete this customer?');">
+            <a asp-page="./Manage" asp-route-id="@Model.Customer.CustomerId" class="btn btn-primary">✏️ Edit</a>
+            <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Customer.CustomerId" onsubmit="return confirm('Are you sure you want to delete this customer?');">
                 <button type="submit" class="btn btn-danger">🗑️ Delete</button>
             </form>
-            @if (Model.Customers.Status != DataAccessLayer.Enums.CustomerStatus.Active)
+            @if (Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active)
             {
-                <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customers.CustomerId">
+                <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customer.CustomerId">
                     <button type="submit" class="btn btn-success">✅ Activate</button>
                 </form>
             }
             else
             {
-                <form method="post" asp-page-handler="Deactivate" asp-route-id="@Model.Customers.CustomerId">
+                <form method="post" asp-page-handler="Deactivate" asp-route-id="@Model.Customer.CustomerId">
                     <button type="submit" class="btn btn-warning">🛑 Deactivate</button>
                 </form>
-                <form method="post" asp-page-handler="Blacklist" asp-route-id="@Model.Customers.CustomerId">
+                <form method="post" asp-page-handler="Blacklist" asp-route-id="@Model.Customer.CustomerId">
                     <button type="submit" class="btn btn-dark">🚫 Blacklist</button>
                 </form>
-                <form method="post" asp-page-handler="Deceased" asp-route-id="@Model.Customers.CustomerId">
+                <form method="post" asp-page-handler="Deceased" asp-route-id="@Model.Customer.CustomerId">
                     <button type="submit" class="btn btn-outline-danger">☠️ Mark Deceased</button>
                 </form>
             }
@@ -115,14 +115,46 @@
 
 
 
-    <!-- 💼 Kontokort -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Accounts</h5>
-            <!-- Account create-formen här -->
-        </div>
-        <div class="card-body">
-            <!-- Kontolistan här -->
+<!-- 💼 Kontokort -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Accounts</h5>
+        <!-- Account create-formen här -->
+    </div>
+    <div class="card-body">
+        <!-- Kontolistan här -->
+        @if(Model.Account.Count == 0)
+        {
+            <p class="text-muted">This customer has no accounts </p>
+        }
+        else
+        {
+            <table class="table table-bordered table-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Account ID</th>
+                        <th>Balance</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var account in Model.Account)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-page="/Account/Details"
+                                   asp-route-id="@account.AccountId"
+                                   asp-route-customerId="@Model.Customer.CustomerId">
+                                    @account.AccountId
+                                </a>
+                            </td>
+                            <td>@account.Balance.ToString("C")</td>
+                            <td>@account.AccountStatus</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
         </div>
     </div>
 

@@ -1,5 +1,4 @@
 using DataAccessLayer.Enums;
-using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NordicBank.ViewModels;
@@ -10,19 +9,23 @@ namespace NordicBank.Pages.CustomerPage
     public class DetailsModel : PageModel
     {
         private readonly ICustomerService _customerService;
+        private readonly IAccountService _accountService;
 
-        public DetailsModel(ICustomerService customerService)
+        public DetailsModel(ICustomerService customerService, IAccountService accountService)
         {
             _customerService = customerService;
+            _accountService = accountService;
         }
-        public CustomerViewModel Customers { get; set; }
+        public CustomerViewModel Customer { get; set; }
+        public List<AccountViewModel> Account { get; set; }
+        [BindProperty(SupportsGet = true)] public int CustomerId { get; set; }
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var dto = await _customerService.GetByIdAsyn(id);
             if (dto == null)
                 return NotFound();
 
-            Customers = new CustomerViewModel
+            Customer = new CustomerViewModel
             {
                 CustomerId = dto.CustomerId,
                 Gender = dto.Gender,
@@ -40,6 +43,18 @@ namespace NordicBank.Pages.CustomerPage
                 Emailaddress = dto.Emailaddress,
                 Status = dto.Status
             };
+
+            var accountDtos = await _accountService.GetCustomerAccountAsync(dto.CustomerId);
+            Account = accountDtos.Select(a => new AccountViewModel()
+            {
+                AccountId = a.AccountId,
+                Frequency = a.Frequency,
+                Created = a.Created,
+                Balance = a.Balance,
+                AccountStatus = a.AccountStatus,
+
+            }).ToList();
+
 
             return Page();
         }
