@@ -9,6 +9,6 @@ namespace Services
 {
     public interface ITransactionService
     {
-        Task<List<TransactionDTO>> GetTransactionsId(int id);
+        Task<List<TransactionDTO>> GetTransactionsIdAsync(int accountId);
     }
 }

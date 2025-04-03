@@ -20,6 +20,7 @@ builder.Services.AddTransient<DataInitializer>();
 
 builder.Services.AddTransient<ICustomerService, CustomerService>();
 builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<ITransactionService, TransactionService>();
 
 var app = builder.Build();
 

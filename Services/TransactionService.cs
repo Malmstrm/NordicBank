@@ -13,7 +13,7 @@ namespace Services
             _dbContext = dbContext;
         }
 
-        public async Task<List<TransactionDTO>> GetGetTransactionsId(int accountId)
+        public async Task<List<TransactionDTO>> GetTransactionsIdAsync(int accountId)
         {
             return await _dbContext.Transactions
                 .Where(t => t.AccountId == accountId)
