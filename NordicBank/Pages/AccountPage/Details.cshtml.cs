@@ -21,10 +21,30 @@ namespace NordicBank.Pages.AccountPage
 
         public List<TransactionViewModel> Transactions { get; set; }
         public AccountViewModel Account {  get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
+            var success = await LoadAccountAndTransactionsAsync();
+            return success ? Page() : NotFound();
+        }
+        public async Task<IActionResult> OnPostAsync(int id, decimal amount, string action)
+        {
+            if (!ModelState.IsValid) return Page();
+
+            bool success = false;
+
+            if (action == "Deposit") success = await _transactionService.DepositAsync(id, amount);
+            else if (action == "Withdraw") success = await _transactionService.WithdrawAsync(id, amount);
+
+            if (!success) ModelState.AddModelError(string.Empty, "Transaction failed. Please check balance or try again.");
+
+            await LoadAccountAndTransactionsAsync();
+            return Page();
+        }
+        private async Task<bool> LoadAccountAndTransactionsAsync()
+        {
             var dto = await _accountService.GetAccountByIDAsync(Id);
-            if(dto == null) return NotFound();
+            if (dto == null) return false;
 
             Account = new AccountViewModel
             {
@@ -33,8 +53,7 @@ namespace NordicBank.Pages.AccountPage
                 Created = dto.Created,
                 Balance = dto.Balance,
                 AccountStatus = dto.AccountStatus,
-                CustomerId = dto.CustomerId,
-
+                CustomerId = dto.CustomerId
             };
 
             var allTransactions = await _transactionService.GetTransactionsIdAsync(Id);
@@ -44,7 +63,7 @@ namespace NordicBank.Pages.AccountPage
                 .OrderByDescending(t => t.Date)
                 .ThenByDescending(t => t.TransactionId)
                 .Take(10)
-                .Select(t => new TransactionViewModel()
+                .Select(t => new TransactionViewModel
                 {
                     Date = t.Date,
                     Type = t.Type,
@@ -55,8 +74,7 @@ namespace NordicBank.Pages.AccountPage
                 })
                 .ToList();
 
-
-            return Page();
+            return true;
         }
     }
 }
