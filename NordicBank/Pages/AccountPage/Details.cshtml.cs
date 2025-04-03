@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Identity.Client;
 using NordicBank.ViewModels;
 using Services;
 using System.ComponentModel.DataAnnotations;
@@ -43,6 +44,39 @@ namespace NordicBank.Pages.AccountPage
             else if (action == "Withdraw") success = await _transactionService.WithdrawAsync(id, amount);
 
             if (!success) ModelState.AddModelError(string.Empty, "Transaction failed. Please check balance or try again.");
+
+            await LoadAccountAndTransactionsAsync();
+            return Page();
+        }
+        public async Task<IActionResult> OnPostTransferAsync(int id)
+        {
+            var amountStr = Request.Form["amount"];
+            var toAccountIdStr = Request.Form["toAccountId"];
+
+            if (!decimal.TryParse(amountStr, out var amount) || amount <= 0)
+            {
+                ModelState.AddModelError("", "Invalid amount.");
+                await LoadAccountAndTransactionsAsync();
+                return Page();
+            }
+
+            if (!int.TryParse(toAccountIdStr, out var toAccountId))
+            {
+                ModelState.AddModelError("", "Invalid destination account.");
+                await LoadAccountAndTransactionsAsync();
+                return Page();
+            }
+
+            if (id == toAccountId)
+            {
+                ModelState.AddModelError("", "You cannot transfer to same account.");
+                await LoadAccountAndTransactionsAsync();
+                return Page();
+            }
+
+            var success = await _transactionService.TransferAsync(id, toAccountId, amount);
+
+            if (!success) ModelState.AddModelError("", "Transfer failed. Please check balance and accound info.");
 
             await LoadAccountAndTransactionsAsync();
             return Page();

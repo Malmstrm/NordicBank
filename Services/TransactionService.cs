@@ -18,6 +18,24 @@ namespace Services
         
         public async Task<bool> DepositAsync(int accountId, decimal amount) => await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Credit", "Deposit", "Bank");
         public async Task<bool> WithdrawAsync(int accountId, decimal amount) => await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Debit", "Withdraw", "Bank");
+        public async Task<bool> TransferAsync(int fromAccountId, int toAccountId, decimal amount)
+        {
+            var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId);
+            var toAccount = await _dbContext.Accounts.FindAsync(toAccountId);
+
+            if (fromAccount == null || toAccount == null) return false;
+
+            if(fromAccount.Balance < amount) return false;
+
+            fromAccount.Balance -= amount;
+            toAccount.Balance += amount;
+
+            await CreateTransactionAsync(fromAccountId, "Debit", "Transfer to " + toAccountId, -amount, fromAccount.Balance, "Transfer");
+            await CreateTransactionAsync(toAccountId, "Credit", "Transfer from " + fromAccountId, amount, toAccount.Balance, "Transfer");
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
         public async Task<List<TransactionDTO>> GetTransactionsIdAsync(int accountId)
         {
             return await _dbContext.Transactions
