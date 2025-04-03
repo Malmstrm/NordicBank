@@ -1,116 +1,119 @@
 ﻿@page "{id:int}"
 @model NordicBank.Pages.CustomerPage.DetailsModel
+@{
+    ViewData["Title"] = "Customer Details";
+}
 
-<h2>Customer Details</h2>
-
-<div class="d-flex flex-column gap-4">
-    <!-- 🧍 Kundkort -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Customer</h5>
-        </div>
-        <div class="card-body">
-            <!-- Customer content här -->
-            <div class="card-body">
-                <div class="row">
-                    <!-- Kolumn 1 -->
-                    <div class="col-md-6">
-                        <dl class="row">
-                            <dt class="col-sm-4">Status</dt>
-                            <dd class="col-sm-8">
-                                @switch (Model.Customers.Status)
-                                {
-                                    case DataAccessLayer.Enums.CustomerStatus.Active:
-                                        <span class="badge bg-success">✅ Active</span>
-                                        break;
-                                    case DataAccessLayer.Enums.CustomerStatus.Inactive:
-                                        <span class="badge bg-warning text-dark">🛑 Inactive</span>
-                                        break;
-                                    case DataAccessLayer.Enums.CustomerStatus.Blacklisted:
-                                        <span class="badge bg-dark">🚫 Blacklisted</span>
-                                        break;
-                                    case DataAccessLayer.Enums.CustomerStatus.Deceased:
-                                        <span class="badge bg-danger">☠️ Deceased</span>
-                                        break;
-                                    default:
-                                        <span class="badge bg-secondary">Unknown</span>
-                                        break;
-                                }
-                            </dd>
-
-                            <dt class="col-sm-4">Customer ID</dt>
-                            <dd class="col-sm-8">@Model.Customers.CustomerId</dd>
-
-                            <dt class="col-sm-4">Gender</dt>
-                            <dd class="col-sm-8">@Model.Customers.Gender</dd>
-
-                            <dt class="col-sm-4">First Name</dt>
-                            <dd class="col-sm-8">@Model.Customers.Givenname</dd>
-
-                            <dt class="col-sm-4">Last Name</dt>
-                            <dd class="col-sm-8">@Model.Customers.Surname</dd>
-
-                            <dt class="col-sm-4">Birthday</dt>
-                            <dd class="col-sm-8">@Model.Customers.Birthday?.ToString("yyyy-MM-dd")</dd>
-                        </dl>
-                    </div>
-
-                    <!-- Kolumn 2 -->
-                    <div class="col-md-6">
-                        <dl class="row">
-                            <dt class="col-sm-4">Social Security Number</dt>
-                            <dd class="col-sm-8">@Model.Customers.NationalId</dd>
-
-                            <dt class="col-sm-4">Email</dt>
-                            <dd class="col-sm-8">@Model.Customers.Emailaddress</dd>
-
-                            <dt class="col-sm-4">Phone</dt>
-                            <dd class="col-sm-8">+@Model.Customers.Telephonecountrycode @Model.Customers.Telephonenumber</dd>
-
-                            <dt class="col-sm-4">Street</dt>
-                            <dd class="col-sm-8">@Model.Customers.Streetaddress</dd>
-
-                            <dt class="col-sm-4">Zip/City</dt>
-                            <dd class="col-sm-8">@Model.Customers.Zipcode @Model.Customers.City</dd>
-
-                            <dt class="col-sm-4">Country</dt>
-                            <dd class="col-sm-8">@Model.Customers.Country (@Model.Customers.CountryCode)</dd>
-                        </dl>
-                    </div>
-                </div>
-
-                <div class="d-flex gap-2 flex-wrap mt-3">
-                    <a asp-page="./Index" class="btn btn-secondary btn-sm">Back to list</a>
-                    <a asp-page="./Manage" asp-route-id="@Model.Customers.CustomerId" class="btn btn-primary btn-sm">Edit</a>
-                    <a asp-page="./Delete" asp-route-id="@Model.Customers.CustomerId" class="btn btn-danger btn-sm">Delete</a>
-                </div>
-
-                <div class="d-flex gap-2 flex-wrap mt-3">
-                    @if (Model.Customers.Status == DataAccessLayer.Enums.CustomerStatus.Active)
-                    {
-                        <form method="post" asp-page-handler="Deactivate" asp-route-id="@Model.Customers.CustomerId"
-                              onsubmit="return confirm('Are you sure you want to deactivate this customer?');">
-                            <button type="submit" class="btn btn-warning btn-sm">🛑 Deactivate</button>
-                        </form>
-                        <form method="post" asp-page-handler="Blacklist" asp-route-id="@Model.Customers.CustomerId"
-                              onsubmit="return confirm('Are you sure you want to blacklist this customer?');">
-                            <button type="submit" class="btn btn-dark btn-sm">🚫 Blacklist</button>
-                        </form>
-                        <form method="post" asp-page-handler="Deceased" asp-route-id="@Model.Customers.CustomerId"
-                              onsubmit="return confirm('Are you sure you want to mark this customer as deceased?');">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">☠️ Mark as Deceased</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customers.CustomerId"
-                              onsubmit="return confirm('Are you sure you want to activate this customer?');">
-                            <button type="submit" class="btn btn-success btn-sm">✅ Activate</button>
-                        </form>
-                    }
-                </div>
-            </div>
+<div class="card mt-4 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Customer Information</h5>
+        <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">← Back to list</a>
     </div>
+    <div class="card-body">
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">Customer ID</dt>
+                    <dd class="col-sm-8">@Model.Customers.CustomerId</dd>
+
+                    <dt class="col-sm-4">First Name</dt>
+                    <dd class="col-sm-8">@Model.Customers.Givenname</dd>
+
+                    <dt class="col-sm-4">Last Name</dt>
+                    <dd class="col-sm-8">@Model.Customers.Surname</dd>
+
+                    <dt class="col-sm-4">Gender</dt>
+                    <dd class="col-sm-8">@Model.Customers.Gender</dd>
+
+                    <dt class="col-sm-4">Birthday</dt>
+                    <dd class="col-sm-8">@Model.Customers.Birthday?.ToString("yyyy-MM-dd")</dd>
+
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">
+                        @switch (Model.Customers.Status)
+                        {
+                            case DataAccessLayer.Enums.CustomerStatus.Active:
+                                <span class="badge bg-success">✅ Active</span>
+                                break;
+                            case DataAccessLayer.Enums.CustomerStatus.Inactive:
+                                <span class="badge bg-warning text-dark">🛑 Inactive</span>
+                                break;
+                            case DataAccessLayer.Enums.CustomerStatus.Blacklisted:
+                                <span class="badge bg-dark">🚫 Blacklisted</span>
+                                break;
+                            case DataAccessLayer.Enums.CustomerStatus.Deceased:
+                                <span class="badge bg-danger">☠️ Deceased</span>
+                                break;
+                            default:
+                                <span class="badge bg-secondary">Unknown</span>
+                                break;
+                        }
+                    </dd>
+                    <dt class="col-sm-4">Total Balace</dt>
+                    <dd class="col-sm-8"></dd>
+                </dl>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">Street Address</dt>
+                    <dd class="col-sm-8">@Model.Customers.Streetaddress</dd>
+
+                    <dt class="col-sm-4">City</dt>
+                    <dd class="col-sm-8">@Model.Customers.City</dd>
+
+                    <dt class="col-sm-4">Zip Code</dt>
+                    <dd class="col-sm-8">@Model.Customers.Zipcode</dd>
+
+                    <dt class="col-sm-4">Country</dt>
+                    <dd class="col-sm-8">@Model.Customers.Country</dd>
+
+                    <dt class="col-sm-4">Country Code</dt>
+                    <dd class="col-sm-8">@Model.Customers.CountryCode</dd>
+
+                    <dt class="col-sm-4">National ID</dt>
+                    <dd class="col-sm-8">@Model.Customers.NationalId</dd>
+
+                    <dt class="col-sm-4">Telephone</dt>
+                    <dd class="col-sm-8">+@Model.Customers.Telephonecountrycode @Model.Customers.Telephonenumber</dd>
+
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">@Model.Customers.Emailaddress</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-4 d-flex flex-wrap justify-content-end gap-2">
+            <a asp-page="./Manage" asp-route-id="@Model.Customers.CustomerId" class="btn btn-primary">✏️ Edit</a>
+            <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Customers.CustomerId" onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+            </form>
+            @if (Model.Customers.Status != DataAccessLayer.Enums.CustomerStatus.Active)
+            {
+                <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customers.CustomerId">
+                    <button type="submit" class="btn btn-success">✅ Activate</button>
+                </form>
+            }
+            else
+            {
+                <form method="post" asp-page-handler="Deactivate" asp-route-id="@Model.Customers.CustomerId">
+                    <button type="submit" class="btn btn-warning">🛑 Deactivate</button>
+                </form>
+                <form method="post" asp-page-handler="Blacklist" asp-route-id="@Model.Customers.CustomerId">
+                    <button type="submit" class="btn btn-dark">🚫 Blacklist</button>
+                </form>
+                <form method="post" asp-page-handler="Deceased" asp-route-id="@Model.Customers.CustomerId">
+                    <button type="submit" class="btn btn-outline-danger">☠️ Mark Deceased</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+
 
     <!-- 💼 Kontokort -->
     <div class="card">

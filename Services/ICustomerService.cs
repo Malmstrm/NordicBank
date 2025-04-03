@@ -1,5 +1,6 @@
 ﻿
 using DataAccessLayer.DTO;
+using DataAccessLayer.Enums;
 
 namespace Services
 {
@@ -9,5 +10,7 @@ namespace Services
         Task<CustomerDTO> GetByIdAsyn(int customerId);
         Task<CustomerDTO> CreateAsync(CustomerDTO dto);
         Task<CustomerDTO> UpdateAsync(CustomerDTO dto);
+        Task<bool> DeleteAsync(int customerId);
+        Task<bool> UpdateStatusAsync(int customerId, CustomerStatus newStatus);
     }
 }

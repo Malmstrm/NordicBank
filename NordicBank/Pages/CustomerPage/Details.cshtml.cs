@@ -1,3 +1,4 @@
+using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -41,6 +42,31 @@ namespace NordicBank.Pages.CustomerPage
             };
 
             return Page();
+        }
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var success = await _customerService.DeleteAsync(id);
+            if(!success) return NotFound();
+
+            return RedirectToPage("Index");
+        }
+        public async Task<IActionResult> OnPostActivateAsync(int id)
+             => await ChangeStatus(id, CustomerStatus.Active);
+
+        public async Task<IActionResult> OnPostDeactivateAsync(int id)
+            => await ChangeStatus(id, CustomerStatus.Inactive);
+
+        public async Task<IActionResult> OnPostBlacklistAsync(int id)
+            => await ChangeStatus(id, CustomerStatus.Blacklisted);
+
+        public async Task<IActionResult> OnPostDeceasedAsync(int id)
+            => await ChangeStatus(id, CustomerStatus.Deceased);
+        private async Task<IActionResult> ChangeStatus(int id, CustomerStatus newStatus)
+        {
+            var success = await _customerService.UpdateStatusAsync(id, newStatus);
+            if(!success) return NotFound();
+
+            return RedirectToPage(new { id });
         }
     }
 }

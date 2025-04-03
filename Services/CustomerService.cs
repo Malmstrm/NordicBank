@@ -1,5 +1,6 @@
 ﻿using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
+using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,6 +41,15 @@ namespace Services
 
             return dto;
         }
+        public async Task<bool> UpdateStatusAsync(int customerId, CustomerStatus newStatus)
+        {
+            var customer = await _dbContext.Customers.FindAsync(customerId);
+            if (customer == null) return false;
+
+            customer.CustomerStatus = newStatus;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
         public async Task<CustomerDTO> UpdateAsync(CustomerDTO dto)
         {
             var customer = await _dbContext.Customers.FindAsync(dto.CustomerId);
@@ -63,6 +73,16 @@ namespace Services
             await _dbContext.SaveChangesAsync();
 
             return dto;
+        }
+        public async Task<bool> DeleteAsync(int customerId)
+        {
+            var customer = await _dbContext.Customers.FindAsync(customerId);
+            if (customer == null) return false;
+
+            _dbContext.Customers.Remove(customer);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
         }
         public async Task<CustomerDTO?> GetByIdAsyn(int customerId)
         {
