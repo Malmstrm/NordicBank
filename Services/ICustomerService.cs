@@ -1,5 +1,4 @@
-﻿
-using DataAccessLayer.DTO;
+﻿using DataAccessLayer.DTO;
 using DataAccessLayer.Enums;
 
 namespace Services
