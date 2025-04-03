@@ -10,5 +10,6 @@ namespace Services
     public interface ITransactionService
     {
         Task<List<TransactionDTO>> GetTransactionsIdAsync(int accountId);
+        Task<List<TransactionDTO>> GetLatestTransactionsCustomer(int customerId);
     }
 }

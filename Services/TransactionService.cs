@@ -29,5 +29,25 @@ namespace Services
                 })
                 .ToListAsync();
         }
+        public async Task<List<TransactionDTO>> GetLatestTransactionsCustomer(int customerId)
+        {
+            return await _dbContext.Transactions
+                .Where(t => _dbContext.Dispositions
+                    .Any(d => d.CustomerId == customerId && d.AccountId == d.AccountId))
+                .OrderByDescending(t => t.Date)
+                .ThenByDescending(t => t.TransactionId)
+                .Take(10)
+                .Select(t => new TransactionDTO()
+                {
+                    Date = t.Date,
+                    Type = t.Type,
+                    Operation = t.Operation,
+                    Amount = t.Amount,
+                    Balance = t.Balance,
+                    Description = t.Symbol ?? t.Operation,
+                    AccountId = t.AccountId
+                })
+                .ToListAsync();
+        }
     }
 }

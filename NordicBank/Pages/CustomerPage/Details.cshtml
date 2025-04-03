@@ -4,7 +4,7 @@
     ViewData["Title"] = "Customer Details";
 }
 
-<div class="card mt-4 shadow-sm">
+<div class="card mt-4 shadow-sm mb-2">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Customer Information</h5>
         <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">← Back to list</a>
@@ -116,7 +116,7 @@
 
 
 <!-- 💼 Kontokort -->
-<div class="card">
+<div class="card mb-2">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Accounts</h5>
         <!-- Account create-formen här -->
@@ -165,6 +165,38 @@
         </div>
         <div class="card-body">
             <!-- Transaktionstabellen här -->
+        @if (Model.Transactions.Count == 0)
+        {
+            <p class="text-muted">No transactions yet.</p>
+        }
+        else
+        {
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Account ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Balance</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model.Transactions)
+                    {
+                        <tr>
+                            <td>@t.AccountId</td>
+                            <td>@t.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@t.Type</td>
+                            <td style="color:@(t.Amount >= 0 ? "green" : "red")">@t.Amount.ToString("C")</td>
+                            <td>@t.Balance.ToString("C")</td>
+                            <td>@t.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
         </div>
     </div>
 </div>

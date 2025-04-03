@@ -10,15 +10,24 @@ namespace NordicBank.Pages.CustomerPage
     {
         private readonly ICustomerService _customerService;
         private readonly IAccountService _accountService;
+        private readonly ITransactionService _transactionService;
 
-        public DetailsModel(ICustomerService customerService, IAccountService accountService)
+        public DetailsModel(ICustomerService customerService, IAccountService accountService, ITransactionService transactionService)
         {
             _customerService = customerService;
             _accountService = accountService;
+            _transactionService = transactionService;
         }
         public CustomerViewModel Customer { get; set; }
         public List<AccountViewModel> Account { get; set; }
+        public List<TransactionViewModel> Transactions { get; set; }
+
+        [BindProperty(SupportsGet = true)] public int Id { get; set; }
         [BindProperty(SupportsGet = true)] public int CustomerId { get; set; }
+        [BindProperty] public string Frequency { get; set; } = "Monthly";
+
+        public int TotalCount { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var dto = await _customerService.GetByIdAsyn(id);
@@ -55,6 +64,21 @@ namespace NordicBank.Pages.CustomerPage
 
             }).ToList();
 
+            var recentTransactions = await _transactionService.GetLatestTransactionsCustomer(id);
+            TotalCount = recentTransactions.Count;
+
+            Transactions = recentTransactions
+                .Select(t => new TransactionViewModel()
+                {
+                    Date = t.Date,
+                    Type = t.Type,
+                    Operation = t.Operation,
+                    Amount = t.Amount,
+                    Balance = t.Balance,
+                    Description = t.Description,
+                    AccountId = t.AccountId
+                })
+                .ToList();
             return Page();
         }
         public async Task<IActionResult> OnPostDeleteAsync(int id)
