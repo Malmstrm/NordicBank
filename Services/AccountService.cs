@@ -24,9 +24,26 @@ namespace Services
                     Created = a.Account.Created,
                     Balance = a.Account.Balance,
                     AccountStatus = a.Account.AccountStatus,
+                    CustomerId = a.CustomerId
                 })
                 .ToListAsync();
 
         }
+        public async Task<AccountDTO?> GetAccountByIDAsync(int accountId)
+        {
+            return await _dbContext.Dispositions
+                .Where(d => d.AccountId == accountId)
+                .Select(d => new AccountDTO
+                {
+                    AccountId = d.Account.AccountId,
+                    Frequency = d.Account.Frequency,
+                    Created = d.Account.Created,
+                    Balance = d.Account.Balance,
+                    AccountStatus = d.Account.AccountStatus,
+                    CustomerId = d.CustomerId
+                })
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

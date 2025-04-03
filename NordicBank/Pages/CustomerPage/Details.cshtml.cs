@@ -22,8 +22,7 @@ namespace NordicBank.Pages.CustomerPage
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var dto = await _customerService.GetByIdAsyn(id);
-            if (dto == null)
-                return NotFound();
+            if (dto == null) return NotFound();
 
             Customer = new CustomerViewModel
             {
@@ -52,9 +51,9 @@ namespace NordicBank.Pages.CustomerPage
                 Created = a.Created,
                 Balance = a.Balance,
                 AccountStatus = a.AccountStatus,
+                CustomerId = a.CustomerId,
 
             }).ToList();
-
 
             return Page();
         }
