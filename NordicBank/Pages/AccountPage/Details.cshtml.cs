@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NordicBank.ViewModels;
 using Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace NordicBank.Pages.AccountPage
 {
@@ -21,6 +22,11 @@ namespace NordicBank.Pages.AccountPage
 
         public List<TransactionViewModel> Transactions { get; set; }
         public AccountViewModel Account {  get; set; }
+
+        [BindProperty] public int ToAccount {  get; set; }
+        [BindProperty] public int FromAccount { get; set; }
+
+        [BindProperty][Required(ErrorMessage = "Amount is required.")] public int Amount { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
