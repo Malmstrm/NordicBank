@@ -28,6 +28,7 @@ namespace NordicBank.Pages.CustomerPage
 
         public int TotalCount { get; set; }
 
+        public string TotalBalance => Account.Sum(a => a.Balance).ToString("C");
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var dto = await _customerService.GetByIdAsyn(id);
