@@ -25,6 +25,8 @@ namespace Services
 
             if (fromAccount == null || toAccount == null) return false;
 
+            if(fromAccount.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active || toAccount.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active) return false;
+
             if(fromAccount.Balance < amount) return false;
 
             fromAccount.Balance -= amount;
@@ -94,7 +96,7 @@ namespace Services
             int accountId, decimal amount, string type, string operation, string symbol)
         {
             var account = await _dbContext.Accounts.FindAsync(accountId);
-            if(account == null) return false;
+            if(account == null || account.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active) return false;
 
             if(type == "Debit" && account.Balance < amount) return false;
 
