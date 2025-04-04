@@ -50,6 +50,24 @@
                         <td>@c.NationalId</td>
                         <td>
                             <a asp-page="./Details" asp-route-id="@c.CustomerId" class="btn btn-sm btn-info">Details</a>
+                            @switch (c.Status)
+                            {
+                                case DataAccessLayer.Enums.CustomerStatus.Active:
+                                    <span title="Active" class="text-success">✅</span>
+                                    break;
+                                case DataAccessLayer.Enums.CustomerStatus.Inactive:
+                                    <span title="Inactive" class="text-warning">🛑</span>
+                                    break;
+                                case DataAccessLayer.Enums.CustomerStatus.Blacklisted:
+                                    <span title="Blacklisted" class="text-dark">🚫</span>
+                                    break;
+                                case DataAccessLayer.Enums.CustomerStatus.Deceased:
+                                    <span title="Deceased" class="text-danger">☠️</span>
+                                    break;
+                                default:
+                                    <span title="Unknown" class="text-muted">❓</span>
+                                    break;
+                            }
                         </td>
                     </tr>
                 }

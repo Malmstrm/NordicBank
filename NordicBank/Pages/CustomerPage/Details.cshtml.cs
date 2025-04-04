@@ -87,7 +87,7 @@ namespace NordicBank.Pages.CustomerPage
             var success = await _customerService.DeleteAsync(id);
             if(!success) return NotFound();
 
-            return RedirectToPage("Index");
+            return RedirectToPage("./Index");
         }
         public async Task<IActionResult> OnPostActivateAsync(int id)
              => await ChangeStatus(id, CustomerStatus.Active);
@@ -105,7 +105,7 @@ namespace NordicBank.Pages.CustomerPage
             var success = await _customerService.UpdateStatusAsync(id, newStatus);
             if(!success) return NotFound();
 
-            return RedirectToPage(new { id });
+            return RedirectToPage("Index");
         }
     }
 }
