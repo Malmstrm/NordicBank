@@ -3,6 +3,7 @@ using DataAccessLayer.DTO;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Services.Utility;
 
 
 namespace Services
@@ -16,8 +17,29 @@ namespace Services
             _dbContext = dbContext;
         }
         
-        public async Task<bool> DepositAsync(int accountId, decimal amount) => await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Credit", "Deposit", "Bank");
-        public async Task<bool> WithdrawAsync(int accountId, decimal amount) => await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Debit", "Withdraw", "Bank");
+        public async Task<TransactionResult> DepositAsync(int accountId, decimal amount)
+        {
+            var account = await _dbContext.Accounts.FindAsync(accountId);
+            if (account == null) 
+                return TransactionResult.Failed("Account not found");
+            if (account.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active)
+                return TransactionResult.Failed("Account not active.");
+
+            await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Credit", "Deposit", "Bank");
+            return TransactionResult.Ok();
+
+        }
+        public async Task<TransactionResult> WithdrawAsync(int accountId, decimal amount)
+        {
+            var account = await _dbContext.Accounts.FindAsync(accountId);
+            if (account == null)
+                return TransactionResult.Failed("Account not found");
+            if (account.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active)
+                return TransactionResult.Failed("Account not active.");
+
+            await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Debit", "Withdraw", "Bank");
+            return TransactionResult.Ok();
+        }
         public async Task<bool> TransferAsync(int fromAccountId, int toAccountId, decimal amount)
         {
             var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId);
