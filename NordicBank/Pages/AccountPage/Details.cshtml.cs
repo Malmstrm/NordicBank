@@ -60,7 +60,9 @@ public class DetailsModel : PageModel
             _ => TransactionResult.Failed("Invalid action.")
         };
 
-        if (!result.Success)
+        if (result.Success)
+            TempData["SuccessMessage"] = $"{action} of {amount:C} completed successfully.";
+        else
             ModelState.AddModelError("", result.Message ?? "Transaction failed");
 
         await LoadAccountAndTransactionsAsync();
@@ -81,7 +83,9 @@ public class DetailsModel : PageModel
         else
         {
             var success = await _transactionService.TransferAsync(id, toAccountId, amount);
-            if (!success)
+            if (success)
+                TempData["SuccessMessage"] = $"Transferred {amount:C} to account {toAccountId}.";
+            else
                 ModelState.AddModelError("", "Transfer failed. Check balance and status.");
         }
 

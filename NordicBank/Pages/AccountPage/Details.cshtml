@@ -2,6 +2,13 @@
 @model NordicBank.Pages.AccountPage.DetailsModel
 @{
 }
+@if (TempData["SuccessMessage"] is string message)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        @message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger mt-2">
