@@ -40,10 +40,20 @@ namespace NordicBank.Pages.AccountPage
 
             bool success = false;
 
-            if (action == "Deposit") success = await _transactionService.DepositAsync(id, amount);
-            else if (action == "Withdraw") success = await _transactionService.WithdrawAsync(id, amount);
+            switch (action)
+            {
+                case "Deposit":
+                    success = await _transactionService.DepositAsync(id, amount);
+                    break;
+                case "Withdraw":
+                    success = await _transactionService.WithdrawAsync(id, amount);
+                    break;
+                default:
+                    ModelState.AddModelError("", "Invalid actiom.");
+                    break;
+            }
 
-            if (!success) ModelState.AddModelError(string.Empty, "Transaction failed. Please check balance or try again.");
+
 
             await LoadAccountAndTransactionsAsync();
             return Page();

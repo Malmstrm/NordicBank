@@ -1,5 +1,6 @@
 ﻿using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
+using DataAccessLayer.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services
@@ -12,7 +13,15 @@ namespace Services
         {
             _dbContext = dbContext;
         }
+        public async Task<bool> UpdateStatusAsync(int accountId, AccountStatus newStatus)
+        {
+            var account = await _dbContext.Accounts.FindAsync(accountId);
+            if(account == null) return false;
 
+            account.AccountStatus = newStatus;
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
         public async Task<List<AccountDTO>> GetCustomerAccountAsync(int customerId)
         {
             return await _dbContext.Dispositions
