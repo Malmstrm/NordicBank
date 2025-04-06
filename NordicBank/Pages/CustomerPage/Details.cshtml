@@ -4,6 +4,7 @@
     ViewData["Title"] = "Customer Details";
 }
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
 @if (TempData["SuccessMessage"] is string message)
 {
     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
@@ -20,31 +21,27 @@
         }
     </div>
 }
-<div class="card mt-4 shadow-sm mb-2">
+
+<!-- Customer Info -->
+<div class="card mt-4 shadow-sm mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Customer Information</h5>
+        <h5 class="mb-0">Customer Overview</h5>
         <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">← Back to list</a>
     </div>
+
     <div class="card-body">
         <div class="row">
-            <!-- Left Column -->
-            <div class="col-md-6">
+            <!-- Left: Customer Info -->
+            <div class="col-md-6 border-end">
+                <div class="text-center mb-3">
+                    <img src="https://flagcdn.com/64x48/@(Model.Customer.CountryCode.ToLower()).png"
+                         alt="@Model.Customer.Country flag"
+                         class="rounded border shadow-sm mb-2" />
+                    <h4 class="fw-bold">@Model.Customer.Givenname</h4>
+                    <p class="text-muted">Customer ID: <strong>@Model.Customer.CustomerId</strong></p>
+                </div>
+
                 <dl class="row">
-                    <dt class="col-sm-4">Customer ID</dt>
-                    <dd class="col-sm-8">@Model.Customer.CustomerId</dd>
-
-                    <dt class="col-sm-4">First Name</dt>
-                    <dd class="col-sm-8">@Model.Customer.Givenname</dd>
-
-                    <dt class="col-sm-4">Last Name</dt>
-                    <dd class="col-sm-8">@Model.Customer.Surname</dd>
-
-                    <dt class="col-sm-4">Gender</dt>
-                    <dd class="col-sm-8">@Model.Customer.Gender</dd>
-
-                    <dt class="col-sm-4">Birthday</dt>
-                    <dd class="col-sm-8">@Model.Customer.Birthday?.ToString("yyyy-MM-dd")</dd>
-
                     <dt class="col-sm-4">Status</dt>
                     <dd class="col-sm-8">
                         @switch (Model.Customer.Status)
@@ -66,89 +63,67 @@
                                 break;
                         }
                     </dd>
-                    <dt class="col-sm-4">Total Balace</dt>
+
+                    <dt class="col-sm-4">Total Balance</dt>
                     <dd class="col-sm-8 text-primary fw-semibold">@Model.TotalBalance</dd>
-                    <button class="btn btn-outline-info mb-3" onclick="loadMoreCustomerInfo(@Model.CustomerId)">
-                        Show more information
+                </dl>
+
+                <div class="d-grid mt-3">
+                    <button class="btn btn-outline-info" onclick="loadMoreCustomerInfo(@Model.Customer.CustomerId)">
+                        <i class="bi bi-info-circle me-1"></i> Show full info
                     </button>
-                </dl>
+                </div>
             </div>
 
-            <!-- Right Column -->
-            <div class="col-md-6">
-                <dl class="row">
-                    <dt class="col-sm-4">Street Address</dt>
-                    <dd class="col-sm-8">@Model.Customer.Streetaddress</dd>
+            <!-- Right: Actions -->
+            <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
+                <div class="d-grid gap-2 w-100 px-3">
+                    <a asp-page="./Manage" asp-route-id="@Model.Customer.CustomerId" class="btn btn-primary w-100">✏️ Edit</a>
 
-                    <dt class="col-sm-4">City</dt>
-                    <dd class="col-sm-8">@Model.Customer.City</dd>
+                    <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Customer.CustomerId"
+                          onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                        <button type="submit" class="btn btn-danger w-100">🗑️ Delete</button>
+                    </form>
 
-                    <dt class="col-sm-4">Zip Code</dt>
-                    <dd class="col-sm-8">@Model.Customer.Zipcode</dd>
+                    <hr class="my-2" />
 
-                    <dt class="col-sm-4">Country</dt>
-                    <dd class="col-sm-8">@Model.Customer.Country</dd>
-
-                    <dt class="col-sm-4">Country Code</dt>
-                    <dd class="col-sm-8">@Model.Customer.CountryCode</dd>
-
-                    <dt class="col-sm-4">National ID</dt>
-                    <dd class="col-sm-8">@Model.Customer.NationalId</dd>
-
-                    <dt class="col-sm-4">Telephone</dt>
-                    <dd class="col-sm-8">+@Model.Customer.Telephonecountrycode @Model.Customer.Telephonenumber</dd>
-
-                    <dt class="col-sm-4">Email</dt>
-                    <dd class="col-sm-8">@Model.Customer.Emailaddress</dd>
-                </dl>
+                    @if (Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active)
+                    {
+                        <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customer.CustomerId">
+                            <button type="submit" class="btn btn-success w-100">✅ Activate</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-page-handler="Deactivate" asp-route-id="@Model.Customer.CustomerId">
+                            <button type="submit" class="btn btn-warning w-100">🛑 Deactivate</button>
+                        </form>
+                        <form method="post" asp-page-handler="Blacklist" asp-route-id="@Model.Customer.CustomerId">
+                            <button type="submit" class="btn btn-dark w-100">🚫 Blacklist</button>
+                        </form>
+                        <form method="post" asp-page-handler="Deceased" asp-route-id="@Model.Customer.CustomerId">
+                            <button type="submit" class="btn btn-outline-danger w-100">☠️ Mark Deceased</button>
+                        </form>
+                    }
+                </div>
             </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="mt-4 d-flex flex-wrap justify-content-end gap-2">
-            <a asp-page="./Manage" asp-route-id="@Model.Customer.CustomerId" class="btn btn-primary">✏️ Edit</a>
-            <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Customer.CustomerId" onsubmit="return confirm('Are you sure you want to delete this customer?');">
-                <button type="submit" class="btn btn-danger">🗑️ Delete</button>
-            </form>
-            @if (Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active)
-            {
-                <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customer.CustomerId">
-                    <button type="submit" class="btn btn-success">✅ Activate</button>
-                </form>
-            }
-            else
-            {
-                <form method="post" asp-page-handler="Deactivate" asp-route-id="@Model.Customer.CustomerId">
-                    <button type="submit" class="btn btn-warning">🛑 Deactivate</button>
-                </form>
-                <form method="post" asp-page-handler="Blacklist" asp-route-id="@Model.Customer.CustomerId">
-                    <button type="submit" class="btn btn-dark">🚫 Blacklist</button>
-                </form>
-                <form method="post" asp-page-handler="Deceased" asp-route-id="@Model.Customer.CustomerId">
-                    <button type="submit" class="btn btn-outline-danger">☠️ Mark Deceased</button>
-                </form>
-            }
         </div>
     </div>
 </div>
 
-
-
-<!-- 💼 Kontokort -->
-<div class="card mb-2">
+<!-- Accounts -->
+<div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Accounts</h5>
-        <!-- Account create-formen här -->
     </div>
     <div class="card-body">
-        <!-- Kontolistan här -->
-        @if(Model.Account.Count == 0)
+        @if (Model.Account.Count == 0)
         {
             <p class="text-muted">This customer has no accounts </p>
         }
         else
         {
-            <table class="table table-bordered table-sm">
+            <table class="table table-hover table-bordered table-striped table-sm align-middle">
                 <thead class="table-light">
                     <tr>
                         <th><i class="bi bi-hash"></i> Account ID</th>
@@ -184,10 +159,9 @@
             </table>
         }
 
-        <!-- 📥 Skapa nytt konto -->
-
+        <!-- Create Account -->
         <form method="post" asp-page-handler="CreateAccount" asp-route-customerId="@Model.Customer.CustomerId">
-            <div class="row g-2 align-items-end">
+            <div class="row g-2 align-items-end mt-3">
                 <div class="col-md-6">
                     <label for="frequency" class="form-label">Frequency</label>
                     <select class="form-select" id="frequency" name="frequency" required>
@@ -209,24 +183,23 @@
                 Please fix the errors above before continuing.
             </div>
         }
-        </div>
     </div>
+</div>
 
-    <!-- 📄 Transaktioner -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">Latest 10 Transactions</h5>
-        </div>
-        <div class="card-body">
-            <!-- Transaktionstabellen här -->
+<!-- Transactions -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Latest 10 Transactions</h5>
+    </div>
+    <div class="card-body">
         @if (Model.Transactions.Count == 0)
         {
             <p class="text-muted">No transactions yet.</p>
         }
         else
         {
-            <table class="table table-sm">
-                <thead>
+            <table class="table table-striped table-sm table-hover align-middle">
+                <thead class="table-light">
                     <tr>
                         <th>Account ID</th>
                         <th>Date</th>
@@ -251,22 +224,24 @@
                 </tbody>
             </table>
         }
-        </div>
     </div>
 </div>
+
+<!-- Modal -->
 <div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow rounded-3">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">More About Customer</h5>
+                <h5 class="modal-title">Customer Details</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="customerDetailsContent">
-                <!-- AJAX-laddat innehåll kommer här -->
+                <!-- AJAX content will load here -->
             </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
     <script>
         function loadMoreCustomerInfo(customerId) {

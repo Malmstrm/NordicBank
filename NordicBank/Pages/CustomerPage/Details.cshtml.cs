@@ -129,8 +129,8 @@ namespace NordicBank.Pages.CustomerPage
                 Telephonenumber = customer.Telephonenumber,
                 Emailaddress = customer.Emailaddress,
                 Status = customer.Status,
-                NumberOfAccounts = await _customerService.GetAccountCountAsync(customerId),
-                TotalBalance = await _customerService.GetTotalBalanceAsync(customerId)
+                NumberOfAccounts = await _accountService.GetAccountCountAsync(customerId),
+                TotalBalance = await _accountService.GetTotalBalanceAsync(customerId)
             };
 
             return new PartialViewResult

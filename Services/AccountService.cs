@@ -53,5 +53,21 @@ namespace Services
                 })
                 .FirstOrDefaultAsync();
         }
+        public async Task<int> GetAccountCountAsync(int customerId)
+        {
+            return await _dbContext.Dispositions
+                .Where(d => d.CustomerId == customerId && d.Type == "OWNER")
+                .Select(d => d.AccountId)
+                .Distinct()
+                .CountAsync();
+        }
+
+        public async Task<decimal> GetTotalBalanceAsync(int customerId)
+        {
+            return await _dbContext.Dispositions
+                .Where(d => d.CustomerId == customerId && d.Type == "OWNER")
+                .Select(d => d.Account.Balance)
+                .SumAsync();
+        }
     }
 }
