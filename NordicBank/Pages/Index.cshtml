@@ -4,7 +4,26 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container ">
+    <div class="row">
+        @foreach (var card in Model.CountryOverview)
+        {
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">
+                            <!-- Använder Flagcdn för att visa flaggan -->
+                            <img src="https://flagcdn.com/64x48/@(card.CountryCode.ToLower()).png"
+                                 alt="@card.Country flag"
+                                 class="img-fluid mb-2" />
+                            @card.Country
+                        </h5>
+                        <p class="card-text">Clients: @card.Clients</p>
+                        <p class="card-text">Accounts: @card.Accounts</p>
+                        <p class="card-text">Capital: @card.Capital</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
