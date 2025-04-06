@@ -66,8 +66,7 @@ public class DetailsModel : PageModel
         else
             ModelState.AddModelError("", result.Message ?? "Transaction failed");
 
-        await LoadAccountAndTransactionsAsync();
-        return Page();
+        return await ReloadAndReturn();
     }
 
     public async Task<IActionResult> OnPostTransferAsync(int id)
