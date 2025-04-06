@@ -40,16 +40,21 @@ namespace Services
             await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Debit", "Withdraw", "Bank");
             return TransactionResult.Ok();
         }
-        public async Task<bool> TransferAsync(int fromAccountId, int toAccountId, decimal amount)
+        public async Task<TransactionResult> TransferAsync(int fromAccountId, int toAccountId, decimal amount)
         {
             var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId);
             var toAccount = await _dbContext.Accounts.FindAsync(toAccountId);
 
-            if (fromAccount == null || toAccount == null) return false;
+            if (fromAccount == null || toAccount == null)
+                return TransactionResult.Failed("One or both account werent found.");
 
-            if(fromAccount.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active || toAccount.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active) return false;
+            if (fromAccount.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active)
+                return TransactionResult.Failed("Sender account is not active.");
 
-            if(fromAccount.Balance < amount) return false;
+            if (toAccount.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active)
+                return TransactionResult.Failed("Reciver account is not active.");
+
+            if (fromAccount.Balance < amount) return TransactionResult.Failed("Insufficient funds.");
 
             fromAccount.Balance -= amount;
             toAccount.Balance += amount;
@@ -58,7 +63,7 @@ namespace Services
             await CreateTransactionAsync(toAccountId, "Credit", "Transfer from " + fromAccountId, amount, toAccount.Balance, "Transfer");
 
             await _dbContext.SaveChangesAsync();
-            return true;
+            return TransactionResult.Ok();
         }
         public async Task<List<TransactionDTO>> GetTransactionsIdAsync(int accountId)
         {

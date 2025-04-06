@@ -10,6 +10,6 @@ namespace Services
         Task<TransactionResult> DepositAsync(int accountId, decimal amount);
         Task<TransactionResult> WithdrawAsync(int accountId, decimal amount);
         Task CreateTransactionAsync(int accountId, string type, string operation, decimal amount, decimal balance, string? symbol = null);
-        Task<bool> TransferAsync(int fromAccount, int toAccount, decimal amount);
+        Task<TransactionResult> TransferAsync(int fromAccount, int toAccount, decimal amount);
     }
 }
