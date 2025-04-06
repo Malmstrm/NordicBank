@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using NordicBank.Infrastructure.Paging.Country;
 using NordicBank.ViewModels;
 using Services;
@@ -28,6 +29,25 @@ namespace NordicBank.Pages
                 Capital = d.Capital,
             })
                 .ToList();
+        }
+        [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "country" })]
+        public async Task<PartialViewResult> OnGetTopCustomersPartialAsync(string country)
+        {
+            var dtoList = await _countryOverviewService.GetTopCustomersByCountryAsync(country);
+
+            var viewModels = dtoList.Select(d => new TopCustomerViewModel
+            {
+                CustomerId = d.CustomerId,
+                Name = d.Name,
+                City = d.City,
+                TotalBalance = d.TotalBalance
+            }).ToList();
+
+            return new PartialViewResult
+            {
+                ViewName = "Partials/_TopCustomersPartial",
+                ViewData = new ViewDataDictionary<List<TopCustomerViewModel>>(ViewData, viewModels)
+            };
         }
     }
 }

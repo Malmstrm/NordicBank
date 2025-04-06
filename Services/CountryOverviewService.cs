@@ -41,5 +41,23 @@ namespace Services
                 .ToListAsync();
 
         }
+        public async Task<List<TopCustomerDTO>> GetTopCustomersByCountryAsync(string country)
+        {
+            return await _dbContext.Customers
+                .Where(c => c.Country == country)
+                .Select(c => new TopCustomerDTO
+                {
+                    CustomerId = c.CustomerId,
+                    Name = c.Givenname + " " + c.Surname,
+                    City = c.City,
+                    TotalBalance = c.Dispositions
+                        .Where(d => d.Type == "OWNER")
+                        .Select(d => d.Account.Balance)
+                        .Sum()
+                })
+                .OrderByDescending(c => c.TotalBalance)
+                .Take(10)
+                .ToListAsync();
+        }
     }
 }

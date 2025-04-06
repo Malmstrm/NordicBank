@@ -10,12 +10,9 @@
         {
             <div class="col-md-3">
                 <div class="card mb-4">
-                    <div class="card-body text-center">
+                    <div class="card-body text-center" style="cursor:pointer;" onclick="loadTopCustomers('@card.Country', '@card.CountryCode')">
                         <h5 class="card-title">
-                            <!-- Använder Flagcdn för att visa flaggan -->
-                            <img src="https://flagcdn.com/64x48/@(card.CountryCode.ToLower()).png"
-                                 alt="@card.Country flag"
-                                 class="img-fluid mb-2" />
+                            <img src="https://flagcdn.com/64x48/@(card.CountryCode.ToLower()).png" alt="@card.Country flag" class="img-fluid mb-2" />
                             @card.Country
                         </h5>
                         <p class="card-text">Clients: @card.Clients</p>
@@ -27,3 +24,35 @@
         }
     </div>
 </div>
+<div class="modal fade" id="topCustomersModal" tabindex="-1" aria-labelledby="topCustomersLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title d-flex align-items-center gap-2" id="topCustomersLabel">
+                    <img id="countryFlagPlaceholder" src="" alt="Country flag" width="32" height="24" class="rounded shadow-sm" />
+                    <span id="countryNamePlaceholder">Country</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="topCustomersContent" style="max-height: 500px; overflow-y: auto;">
+                <!-- Här laddas partialen -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function loadTopCustomers(countryName, countryCode) {
+            $.get('?handler=TopCustomersPartial&country=' + countryName, function (data) {
+                $('#topCustomersContent').html(data);
+                $('#countryNamePlaceholder').text(countryName);
+                $('#countryFlagPlaceholder').attr('src', 'https://flagcdn.com/32x24/' + countryCode.toLowerCase() + '.png');
+                var modal = new bootstrap.Modal(document.getElementById('topCustomersModal'));
+                modal.show();
+            });
+        }
+    </script>
+}

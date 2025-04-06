@@ -10,5 +10,6 @@ namespace Services
     public interface ICountryOverviewService
     {
         Task<List<CountryOverviewDTO>> GetCountryOverviewAsync();
+        Task<List<TopCustomerDTO>> GetTopCustomersByCountryAsync(string country);
     }
 }
