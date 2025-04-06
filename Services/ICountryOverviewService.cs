@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataAccessLayer.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    internal interface ICountryOverviewService
+    public interface ICountryOverviewService
     {
+        Task<List<CountryOverviewDTO>> GetCountryOverviewAsync();
     }
 }
