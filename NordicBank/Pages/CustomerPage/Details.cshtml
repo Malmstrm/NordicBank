@@ -78,7 +78,7 @@
             <!-- Right: Actions -->
             <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
                 <div class="d-grid gap-2 w-100 px-3">
-                    <!-- Vanliga åtgärder -->
+                    <!-- ✏️ Edit och 🗑️ Delete -->
                     <a asp-page="./Manage" asp-route-id="@Model.Customer.CustomerId" class="btn btn-primary w-100">
                         ✏️ Edit
                     </a>
@@ -88,11 +88,11 @@
                         <button type="submit" class="btn btn-danger w-100">🗑️ Delete</button>
                     </form>
 
-                    <!-- Separator -->
+                    <!-- Separator + rubrik -->
                     <hr class="my-2" />
                     <div class="text-muted small text-center mb-2">Status Actions</div>
 
-                    <!-- Statusknappar -->
+                    <!-- 🚦 Status-knappar -->
                     @if (Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active)
                     {
                         <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customer.CustomerId">
@@ -112,7 +112,6 @@
                         </form>
                     }
                 </div>
-
             </div>
         </div>
     </div>
