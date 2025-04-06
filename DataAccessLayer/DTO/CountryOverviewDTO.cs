@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.DTO
 {
-    internal class CountryOverviewDTO
+    public class CountryOverviewDTO
     {
+        public string Country {  get; set; }
+        public string CountryCode { get; set; }
+        public int Clients { get; set; }
+        public int Accounts { get; set; }
+        public decimal Capital { get; set; }
     }
 }
