@@ -144,13 +144,15 @@
             </table>
             @if (Model.TotalCount > 20)
             {
-                <button id="load-more-btn"
-                        data-account-id="@Model.Account.AccountId"
-                        data-skip="20"
-                        data-total="@Model.TotalCount"
-                        class="btn btn-outline-secondary mt-3">
-                    Load more
-                </button>
+                <div class="text-center mt-3">
+                    <button id="load-more-btn"
+                            data-account-id="@Model.Account.AccountId"
+                            data-skip="20"
+                            data-total="@Model.TotalCount"
+                            class="btn btn-outline-secondary">
+                        Load more
+                    </button>
+                </div>
             }
         }
     </div>
