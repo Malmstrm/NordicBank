@@ -1,13 +1,15 @@
-﻿@using NordicBank.ViewModels;
-@model FullCustomerViewModel
+﻿
+@model NordicBank.ViewModels.CustomerDetailsViewModel
 
 <div>
-    <p><strong>Customer ID:</strong> @Model.CustomerId</p>
-    <p><strong>Name:</strong> @Model.Name</p>
-    <p><strong>City:</strong> @Model.City</p>
-    <p><strong>Address:</strong> @Model.Address</p>
+    <h5>@Model.FullName</h5>
+    <p><strong>Gender:</strong> @Model.Gender</p>
+    <p><strong>Address:</strong> @Model.Streetaddress, @Model.City @Model.Zipcode</p>
     <p><strong>Phone:</strong> @Model.Phone</p>
-    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Email:</strong> @Model.Emailaddress</p>
+    <p><strong>Birthday:</strong> @(Model.Birthday?.ToString("yyyy-MM-dd"))</p>
     <p><strong>National ID:</strong> @Model.NationalId</p>
-    <p><strong>Number of Accounts:</strong> @Model.AccountCount</p>
+    <hr />
+    <p><strong>Accounts:</strong> @Model.NumberOfAccounts</p>
+    <p><strong>Total Balance:</strong> @Model.TotalBalance.ToString(\"C\")</p>
 </div>

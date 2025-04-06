@@ -68,6 +68,9 @@
                     </dd>
                     <dt class="col-sm-4">Total Balace</dt>
                     <dd class="col-sm-8 text-primary fw-semibold">@Model.TotalBalance</dd>
+                    <button class="btn btn-outline-info mb-3" onclick="loadMoreCustomerInfo(@Model.CustomerId)">
+                        Show more information
+                    </button>
                 </dl>
             </div>
 
@@ -251,3 +254,27 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow rounded-3">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">More About Customer</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="customerDetailsContent">
+                <!-- AJAX-laddat innehåll kommer här -->
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function loadMoreCustomerInfo(customerId) {
+            $.get('?handler=MoreInfoPartial&customerId=' + customerId, function (data) {
+                $('#customerDetailsContent').html(data);
+                var modal = new bootstrap.Modal(document.getElementById('customerDetailsModal'));
+                modal.show();
+            });
+        }
+    </script>
+}
