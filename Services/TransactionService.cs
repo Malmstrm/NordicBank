@@ -83,6 +83,27 @@ namespace Services
                 })
                 .ToListAsync();
         }
+        public async Task<List<TransactionDTO>> GetTransactionsPagedAsync(int accountId, int skip, int take = 20)
+        {
+            return await _dbContext.Transactions
+                .Where(t => t.AccountId == accountId)
+                .OrderByDescending(t => t.Date)
+                .ThenByDescending(t => t.TransactionId)
+                .Skip(skip)
+                .Take(take)
+                .Select(t => new TransactionDTO
+                {
+                    Date = t.Date,
+                    Type = t.Type,
+                    Operation = t.Operation,
+                    Amount = t.Amount,
+                    Balance = t.Balance,
+                    Description = t.Symbol ?? t.Bank ?? t.Account ?? t.Operation,
+                    AccountId = accountId
+                })
+                .ToListAsync();
+        }
+
         public async Task<List<TransactionDTO>> GetLatestTransactionsCustomer(int customerId)
         {
             return await _dbContext.Transactions

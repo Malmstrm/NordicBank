@@ -112,9 +112,11 @@
 
 <!-- Transactions -->
 <div class="card mt-4">
-    <div class="card-header">
-        <h5 class="mb-0">Latest 10 Transactions</h5>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Transactions</h5>
+
     </div>
+
     <div class="card-body">
         @if (Model.Transactions.Count == 0)
         {
@@ -132,23 +134,60 @@
                         <th>Description</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="transactionTableBody">
                     @foreach (var t in Model.Transactions)
                     {
-                        <tr>
-                            <td>@t.Date.ToString("yyyy-MM-dd")</td>
-                            <td>@t.Type</td>
-                            <td style="color:@(t.Amount >= 0 ? "green" : "red")">@t.Amount.ToString("C")</td>
-                            <td>@t.Balance.ToString("C")</td>
-                            <td>@t.Description</td>
-                        </tr>
+                        <partial name="_TransactionRow" model="t" />
                     }
                 </tbody>
+
             </table>
+            @if (Model.TotalCount > 20)
+            {
+                <button id="load-more-btn"
+                        data-account-id="@Model.Account.AccountId"
+                        data-skip="20"
+                        data-total="@Model.TotalCount"
+                        class="btn btn-outline-secondary mt-3">
+                    Load more
+                </button>
+            }
         }
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("load-more-btn")?.addEventListener("click", async function () {
+            const btn = this;
+            const accountId = btn.dataset.accountId;
+            let skip = parseInt(btn.dataset.skip);
+            const total = parseInt(btn.dataset.total); // 👈 Lägg till totalen som data-attribut i knappen!
+
+            try {
+                const response = await fetch(`?handler=FetchTransactions&accountId=${accountId}&skip=${skip}`);
+                const html = await response.text();
+
+                if (html.trim() !== "") {
+                    document.getElementById("transactionTableBody").insertAdjacentHTML("beforeend", html);
+                    skip += 20;
+                    btn.dataset.skip = skip;
+
+                    // ✅ Dölj knappen när alla är laddade
+                    if (skip >= total) {
+                        btn.style.display = "none";
+                    }
+                } else {
+                    // 🔒 Fallback
+                    btn.disabled = true;
+                    btn.textContent = "No more transactions";
+                }
+            } catch (error) {
+                console.error("Failed to load transactions:", error);
+                btn.disabled = true;
+                btn.textContent = "Error loading transactions";
+            }
+        });
+    </script>
 }

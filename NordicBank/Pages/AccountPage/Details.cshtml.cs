@@ -1,9 +1,10 @@
-using DataAccessLayer.Enums;
+﻿using DataAccessLayer.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NordicBank.ViewModels;
 using Services;
 using Services.Utility;
+using System.Text;
 
 namespace NordicBank.Pages.AccountPage;
 
@@ -95,7 +96,33 @@ public class DetailsModel : PageModel
         }
         return await ReloadAndReturn();
     }
+    public async Task<IActionResult> OnGetFetchTransactionsAsync(int accountId, int skip)
+    {
+        var nextTransactions = await _transactionService.GetTransactionsPagedAsync(accountId, skip, 20);
 
+        if (!nextTransactions.Any())
+            return Content("");
+
+        var htmlBuilder = new StringBuilder();
+
+        foreach (var t in nextTransactions)
+        {
+            var vm = new TransactionViewModel
+            {
+                Date = t.Date,
+                Type = t.Type,
+                Operation = t.Operation,
+                Amount = t.Amount,
+                Balance = t.Balance,
+                Description = t.Description
+            };
+
+            var rendered = await RazorPartialToString.RenderPartialViewToString(this, "_TransactionRow", vm);
+            htmlBuilder.AppendLine(rendered);
+        }
+
+        return Content(htmlBuilder.ToString(), "text/html");
+    }
     private async Task<bool> LoadAccountAndTransactionsAsync()
     {
         var dto = await _accountService.GetAccountByIDAsync(Id);

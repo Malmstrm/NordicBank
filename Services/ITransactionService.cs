@@ -11,5 +11,6 @@ namespace Services
         Task<TransactionResult> WithdrawAsync(int accountId, decimal amount);
         Task CreateTransactionAsync(int accountId, string type, string operation, decimal amount, decimal balance, string? symbol = null);
         Task<TransactionResult> TransferAsync(int fromAccount, int toAccount, decimal amount);
+        Task<List<TransactionDTO>> GetTransactionsPagedAsync(int accountId, int skip, int take = 20);
     }
 }

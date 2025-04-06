@@ -1,0 +1,8 @@
+﻿@model NordicBank.ViewModels.TransactionViewModel
+<tr>
+    <td>@Model.Date.ToString("yyyy-MM-dd")</td>
+    <td>@Model.Type</td>
+    <td style="color:@(Model.Amount >= 0 ? "green" : "red")">@Model.Amount.ToString("C")</td>
+    <td>@Model.Balance.ToString("C")</td>
+    <td>@Model.Description</td>
+</tr>
