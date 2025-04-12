@@ -4,6 +4,7 @@ using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Services.Utility;
+using DataAccessLayer.Enums;
 
 
 namespace Services
@@ -16,45 +17,41 @@ namespace Services
         {
             _dbContext = dbContext;
         }
-        
+
         public async Task<TransactionResult> DepositAsync(int accountId, decimal amount)
         {
-            var account = await _dbContext.Accounts.FindAsync(accountId);
-            if (account == null) 
-                return TransactionResult.Failed("Account not found");
-            if (account.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active)
-                return TransactionResult.Failed("Account not active.");
+            var validation = await ValidateTransactionAsync(accountId);
+            if (!validation.IsValid) return TransactionResult.Failed(validation.ErrorMessage);
 
             await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Credit", "Deposit", "Bank");
             return TransactionResult.Ok();
-
         }
+
         public async Task<TransactionResult> WithdrawAsync(int accountId, decimal amount)
         {
-            var account = await _dbContext.Accounts.FindAsync(accountId);
-            if (account == null)
-                return TransactionResult.Failed("Account not found");
-            if (account.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active)
-                return TransactionResult.Failed("Account not active.");
+            var validation = await ValidateTransactionAsync(accountId);
+            if (!validation.IsValid) return TransactionResult.Failed(validation.ErrorMessage);
 
             await UpdateBalanceAndLogTransactionAsync(accountId, amount, "Debit", "Withdraw", "Bank");
             return TransactionResult.Ok();
         }
+
         public async Task<TransactionResult> TransferAsync(int fromAccountId, int toAccountId, decimal amount)
         {
+            var fromValidation = await ValidateTransactionAsync(fromAccountId);
+            if (!fromValidation.IsValid) return TransactionResult.Failed("Sender: " + fromValidation.ErrorMessage);
+
+            var toValidation = await ValidateTransactionAsync(toAccountId);
+            if (!toValidation.IsValid) return TransactionResult.Failed("Receiver: " + toValidation.ErrorMessage);
+
             var fromAccount = await _dbContext.Accounts.FindAsync(fromAccountId);
             var toAccount = await _dbContext.Accounts.FindAsync(toAccountId);
 
             if (fromAccount == null || toAccount == null)
-                return TransactionResult.Failed("One or both account werent found.");
+                return TransactionResult.Failed("One or both accounts were not found.");
 
-            if (fromAccount.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active)
-                return TransactionResult.Failed("Sender account is not active.");
-
-            if (toAccount.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active)
-                return TransactionResult.Failed("Reciver account is not active.");
-
-            if (fromAccount.Balance < amount) return TransactionResult.Failed("Insufficient funds.");
+            if (fromAccount.Balance < amount)
+                return TransactionResult.Failed("Insufficient funds.");
 
             fromAccount.Balance -= amount;
             toAccount.Balance += amount;
@@ -65,6 +62,7 @@ namespace Services
             await _dbContext.SaveChangesAsync();
             return TransactionResult.Ok();
         }
+
         public async Task<List<TransactionDTO>> GetTransactionsIdAsync(int accountId)
         {
             return await _dbContext.Transactions
@@ -144,7 +142,7 @@ namespace Services
             int accountId, decimal amount, string type, string operation, string symbol)
         {
             var account = await _dbContext.Accounts.FindAsync(accountId);
-            if(account == null || account.AccountStatus != DataAccessLayer.Enums.AccountStatus.Active) return false;
+            if(account == null || account.AccountStatus != AccountStatus.Active) return false;
 
             if(type == "Debit" && account.Balance < amount) return false;
 
@@ -160,6 +158,22 @@ namespace Services
 
             await _dbContext.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<ValidationResult> ValidateTransactionAsync(int accountId)
+        {
+            var disposition = await _dbContext.Dispositions
+                .Include(d => d.Customer)
+                .Include(d => d.Account)
+                .FirstOrDefaultAsync(d => d.AccountId == accountId && d.Type == "OWNER");
+
+            if(disposition == null) return ValidationResult.Invalid("Account or customer not found.");
+
+            if(disposition.Account.AccountStatus != AccountStatus.Active) return ValidationResult.Invalid("Account is not active.");
+
+            if (disposition.Customer.CustomerStatus != CustomerStatus.Active) return ValidationResult.Invalid("Customer is not active");
+
+            return ValidationResult.Valid();
         }
     }
 }
