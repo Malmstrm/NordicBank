@@ -22,6 +22,39 @@
     </div>
 }
 
+@{
+    var statusMessage = Model.Customer.Status switch
+    {
+        DataAccessLayer.Enums.CustomerStatus.Inactive => "This customer is inactive. Account creation and transactions are disabled.",
+        DataAccessLayer.Enums.CustomerStatus.Deceased => "This customer is marked as deceased. All activity is locked.",
+        DataAccessLayer.Enums.CustomerStatus.Blacklisted => "This customer is blacklisted. No further actions are allowed.",
+        _ => "This customer has an unknown status."
+    };
+
+    var alertClass = Model.Customer.Status switch
+    {
+        DataAccessLayer.Enums.CustomerStatus.Inactive => "alert-warning",
+        DataAccessLayer.Enums.CustomerStatus.Deceased => "alert-danger",
+        DataAccessLayer.Enums.CustomerStatus.Blacklisted => "alert-dark",
+        _ => "alert-secondary"
+    };
+
+    var iconClass = Model.Customer.Status switch
+    {
+        DataAccessLayer.Enums.CustomerStatus.Inactive => "bi-pause-circle-fill",
+        DataAccessLayer.Enums.CustomerStatus.Deceased => "bi-x-octagon-fill",
+        DataAccessLayer.Enums.CustomerStatus.Blacklisted => "bi-shield-exclamation",
+        _ => "bi-question-circle-fill"
+    };
+}
+
+@if (Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active)
+{
+    <div class="alert @alertClass d-flex align-items-center mt-3" role="alert">
+        <i class="bi @iconClass me-2"></i>
+        @statusMessage
+    </div>
+}
 <!-- Customer Info -->
 <div class="card mt-4 shadow-sm mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -30,6 +63,7 @@
     </div>
 
     <div class="card-body">
+        <div class="card-body">
         <div class="row">
             <!-- Left: Info -->
             <div class="col-md-6 border-end">
@@ -150,12 +184,23 @@
                     {
                         <tr>
                             <td>
-                                <a asp-page="/AccountPage/Details"
-                                   asp-route-id="@account.AccountId"
-                                   asp-route-customerId="@Model.Customer.CustomerId"
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i> @account.AccountId
-                                </a>
+                                    @if (Model.Customer.Status == DataAccessLayer.Enums.CustomerStatus.Active)
+                                    {
+                                        <a asp-page="/AccountPage/Details"
+                                           asp-route-id="@account.AccountId"
+                                           asp-route-customerId="@Model.Customer.CustomerId"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="View account">
+                                            <i class="bi bi-eye"></i> @account.AccountId
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-secondary" disabled
+                                                title="Disabled due to customer status">
+                                            <i class="bi bi-eye-slash"></i> @account.AccountId
+                                        </button>
+                                    }
                             </td>
                             <td>@account.Balance.ToString("C")</td>
                             <td>
@@ -188,9 +233,10 @@
                     </select>
                 </div>
                 <div class="col-md-6 d-grid">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Create Account
-                    </button>
+                        <button type="submit" class="btn btn-primary"
+                        @(Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active ? "disabled" : "")>
+                            <i class="bi bi-plus-circle me-1"></i> Create Account
+                        </button>
                 </div>
             </div>
         </form>
