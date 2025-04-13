@@ -1,3 +1,14 @@
-﻿@{
-    Layout = "_Layout";
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    @if (SignInManager.IsSignedIn(User))
+    {
+        Layout = "_Dashboard";
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
 }
