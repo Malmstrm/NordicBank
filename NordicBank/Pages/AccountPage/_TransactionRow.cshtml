@@ -1,8 +1,21 @@
 ﻿@model NordicBank.ViewModels.TransactionViewModel
 <tr>
-    <td>@Model.Date.ToString("yyyy-MM-dd")</td>
-    <td>@Model.Type</td>
-    <td style="color:@(Model.Amount >= 0 ? "green" : "red")">@Model.Amount.ToString("C")</td>
-    <td>@Model.Balance.ToString("C")</td>
+    <td class="text-center">@Model.Type</td>
     <td>@Model.Description</td>
+    <td class="text-end">@Model.Date.ToString("yyyy-MM-dd")</td>
+    <td class="fw-semibold text-end">
+        @if (Model.Amount >= 0)
+        {
+            <span class="text-success">
+                <i class="bi bi-arrow-down-circle me-1"></i> @Model.Amount.ToString("C")
+            </span>
+        }
+        else
+        {
+            <span class="text-danger">
+                <i class="bi bi-arrow-up-circle me-1"></i> @Model.Amount.ToString("C")
+            </span>
+        }
+    </td>
+    <td class="text-end">@Model.Balance.ToString("C")</td>
 </tr>
