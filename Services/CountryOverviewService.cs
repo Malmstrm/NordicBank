@@ -41,6 +41,52 @@ namespace Services
                 .ToListAsync();
 
         }
+        public async Task<List<CountryReportDTO>> GetDetailedCountryReportAsync()
+        {
+            var selectedCountries = new[] { "Sweden", "Norway", "Finland", "Denmark" };
+
+            var baseData = await _dbContext.Customers
+                .Where(c => selectedCountries.Contains(c.Country))
+                .GroupBy(c => c.Country)
+                .Select(g => new CountryReportDTO
+                {
+                    Country = g.Key,
+                    CountryCode = g.Select(c => c.CountryCode).FirstOrDefault(),
+                    Clients = g.Count(),
+                    Accounts = g.SelectMany(c => c.Dispositions)
+                                .Where(d => d.Type == "OWNER")
+                                .Select(d => d.AccountId)
+                                .Distinct()
+                                .Count(),
+                    Capital = g.SelectMany(c => c.Dispositions)
+                                .Where(d => d.Type == "OWNER")
+                                .Select(d => d.Account.Balance)
+                                .Sum()
+                }).ToListAsync();
+
+            // Lägg till toppkund per land
+            foreach (var item in baseData)
+            {
+                var topCustomer = await _dbContext.Customers
+                    .Where(c => c.Country == item.Country)
+                    .Select(c => new
+                    {
+                        Name = c.Givenname + " " + c.Surname,
+                        Balance = c.Dispositions
+                                  .Where(d => d.Type == "OWNER")
+                                  .Select(d => d.Account.Balance)
+                                  .Sum()
+                    })
+                    .OrderByDescending(c => c.Balance)
+                    .FirstOrDefaultAsync();
+
+                item.TopCustomerName = topCustomer?.Name;
+                item.TopCustomerBalance = topCustomer?.Balance;
+            }
+
+            return baseData;
+        }
+
         public async Task<List<TopCustomerDTO>> GetTopCustomersByCountryAsync(string country)
         {
             return await _dbContext.Customers

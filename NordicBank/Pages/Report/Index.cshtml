@@ -1,0 +1,44 @@
+﻿@page
+@model NordicBank.Pages.Report.IndexModel
+@{
+    ViewData["Title"] = "Summary Reports";
+}
+
+<h2 class="mb-4">📊 Detailed Country Report</h2>
+
+<table class="table table-bordered table-striped shadow-sm">
+    <thead class="table-primary">
+        <tr>
+            <th>Land</th>
+            <th>Kunder</th>
+            <th>Konton</th>
+            <th>Totalt kapital</th>
+            <th>Snittsaldo</th>
+            <th>Toppkund</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Model.CountryReports)
+        {
+            <tr>
+                <td>
+                    <img src="https://flagcdn.com/32x24/@(row.CountryCode.ToLower()).png" class="me-2" />
+                    @row.Country
+                </td>
+                <td>@row.Clients</td>
+                <td>@row.Accounts</td>
+                <td>@row.Capital.ToString("C0")</td>
+                <td>@row.AverageBalance.ToString("C0")</td>
+                <td>
+                    @if (row.TopCustomerName != null)
+                    {
+                        <span class="fw-bold">@row.TopCustomerName</span>
+
+                        <br />
+                        <small class="text-muted">@row.TopCustomerBalance?.ToString("C0")</small>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
