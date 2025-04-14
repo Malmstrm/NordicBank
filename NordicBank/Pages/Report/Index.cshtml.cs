@@ -2,6 +2,7 @@ using DataAccessLayer.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services;
+using System.Text.Json;
 
 namespace NordicBank.Pages.Report
 {

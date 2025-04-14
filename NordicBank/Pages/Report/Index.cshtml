@@ -1,74 +1,129 @@
 ﻿@page
+@using System.Text.Json
 @model NordicBank.Pages.Report.IndexModel
 @{
     ViewData["Title"] = "Summary Reports";
+    Layout = "_Dashboard";
 }
 
-<h3 class="mb-3">👥 Kundaktivitet</h3>
+<!-- Sidrubrik -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 text-dark fw-bold">📊 Summary Reports</h1>
+</div>
 
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card text-center shadow-sm border-start border-success border-4">
+<!-- Kundaktivitet - tre kort -->
+<div class="row mb-5">
+    <div class="col-md-4 mb-3">
+        <div class="card border-start border-4 border-success shadow-sm">
             <div class="card-body">
-                <h6 class="text-muted">📅 Aktiva kunder (90 dagar)</h6>
-                <h2 class="fw-bold text-success">@Model.CustomerActivity.ActiveCustomers</h2>
+                <h6 class="card-subtitle mb-2 text-muted">📅 Aktiva kunder (90 dagar)</h6>
+                <h2 class="card-title fw-bold text-success">@Model.CustomerActivity.ActiveCustomers</h2>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-center shadow-sm border-start border-danger border-4">
+    <div class="col-md-4 mb-3">
+        <div class="card border-start border-4 border-danger shadow-sm">
             <div class="card-body">
-                <h6 class="text-muted">🧊 Inaktiva kunder (12 månader)</h6>
-                <h2 class="fw-bold text-danger">@Model.CustomerActivity.InactiveCustomers</h2>
+                <h6 class="card-subtitle mb-2 text-muted">🧊 Inaktiva kunder (12 månader)</h6>
+                <h2 class="card-title fw-bold text-danger">@Model.CustomerActivity.InactiveCustomers</h2>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-center shadow-sm border-start border-primary border-4">
+    <div class="col-md-4 mb-3">
+        <div class="card border-start border-4 border-primary shadow-sm">
             <div class="card-body">
-                <h6 class="text-muted">👥 Nya kunder (30 dagar)</h6>
-                <h2 class="fw-bold text-primary">@Model.CustomerActivity.NewCustomers</h2>
+                <h6 class="card-subtitle mb-2 text-muted">👥 Nya kunder (30 dagar)</h6>
+                <h2 class="card-title fw-bold text-primary">@Model.CustomerActivity.NewCustomers</h2>
             </div>
         </div>
     </div>
 </div>
 
-<h2 class="mb-4">📊 Detailed Country Report</h2>
+<!-- Kapital per land - Chart -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0">💰 Kapital per land</h5>
+    </div>
+    <div class="card-body">
+        <canvas id="capitalChart" height="100"></canvas>
+    </div>
+</div>
 
-<table class="table table-bordered table-striped shadow-sm">
-    <thead class="table-primary">
-        <tr>
-            <th>Land</th>
-            <th>Kunder</th>
-            <th>Konton</th>
-            <th>Totalt kapital</th>
-            <th>Snittsaldo</th>
-            <th>Toppkund</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var row in Model.CountryReports)
-        {
-            <tr>
-                <td>
-                    <img src="https://flagcdn.com/32x24/@(row.CountryCode.ToLower()).png" class="me-2" />
-                    @row.Country
-                </td>
-                <td>@row.Clients</td>
-                <td>@row.Accounts</td>
-                <td>@row.Capital.ToString("C0")</td>
-                <td>@row.AverageBalance.ToString("C0")</td>
-                <td>
-                    @if (row.TopCustomerName != null)
+<!-- Country Details Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0">🌍 Detaljerad översikt per land</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Land</th>
+                        <th>Kunder</th>
+                        <th>Konton</th>
+                        <th>Totalt kapital</th>
+                        <th>Snittsaldo</th>
+                        <th>Toppkund</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model.CountryReports)
                     {
-                        <span class="fw-bold">@row.TopCustomerName</span>
+                        <tr>
+                            <td>
+                                <img src="https://flagcdn.com/32x24/@(row.CountryCode.ToLower()).png" class="me-2" />
+                                @row.Country
+                            </td>
+                            <td>@row.Clients</td>
+                            <td>@row.Accounts</td>
+                            <td>@row.Capital.ToString("C0")</td>
+                            <td>@row.AverageBalance.ToString("C0")</td>
+                            <td>
+                                @if (row.TopCustomerName != null)
+                                {
+                                    <span class="fw-bold">@row.TopCustomerName</span>
 
-                        <br />
-                        <small class="text-muted">@row.TopCustomerBalance?.ToString("C0")</small>
+                                    <br />
+                                    <small class="text-muted">@row.TopCustomerBalance?.ToString("C0")</small>
+                                }
+                            </td>
+                        </tr>
                     }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
+@section Scripts {
+    <script>
+        const ctx = document.getElementById('capitalChart').getContext('2d');
+        const capitalChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(JsonSerializer.Serialize(Model.CountryReports.Select(c => c.Country))),
+                datasets: [{
+                    label: 'Totalt kapital (kr)',
+                    data: @Html.Raw(JsonSerializer.Serialize(Model.CountryReports.Select(c => c.Capital))),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return value.toLocaleString('sv-SE') + " kr";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

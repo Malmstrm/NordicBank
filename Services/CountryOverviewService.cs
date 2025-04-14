@@ -52,17 +52,23 @@ namespace Services
                 {
                     Country = g.Key,
                     CountryCode = g.Select(c => c.CountryCode).FirstOrDefault(),
-                    Clients = g.Count(),
+
+                    // ✅ Endast kunder med minst en OWNER-disposition
+                    Clients = g.Count(c => c.Dispositions.Any(d => d.Type == "OWNER")),
+
+                    // ✅ Alla konton (även flera per kund) där kunden är OWNER
                     Accounts = g.SelectMany(c => c.Dispositions)
                                 .Where(d => d.Type == "OWNER")
                                 .Select(d => d.AccountId)
-                                .Distinct()
                                 .Count(),
+
+                    // ✅ Total balans på dessa konton
                     Capital = g.SelectMany(c => c.Dispositions)
                                 .Where(d => d.Type == "OWNER")
                                 .Select(d => d.Account.Balance)
                                 .Sum()
-                }).ToListAsync();
+                })
+                .ToListAsync();
 
             // Lägg till toppkund per land
             foreach (var item in baseData)
@@ -86,6 +92,8 @@ namespace Services
 
             return baseData;
         }
+
+
         public async Task<CustomerActivityDTO> GetCustomerActivityAsync()
         {
             var now = DateTime.Now;
