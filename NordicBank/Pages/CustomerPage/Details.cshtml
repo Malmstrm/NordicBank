@@ -12,88 +12,43 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger mt-2">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <div>@error.ErrorMessage</div>
-        }
-    </div>
-}
 
-@{
-    var statusMessage = Model.Customer.Status switch
-    {
-        DataAccessLayer.Enums.CustomerStatus.Inactive => "This customer is inactive. Account creation and transactions are disabled.",
-        DataAccessLayer.Enums.CustomerStatus.Deceased => "This customer is marked as deceased. All activity is locked.",
-        DataAccessLayer.Enums.CustomerStatus.Blacklisted => "This customer is blacklisted. No further actions are allowed.",
-        _ => "This customer has an unknown status."
-    };
-
-    var alertClass = Model.Customer.Status switch
-    {
-        DataAccessLayer.Enums.CustomerStatus.Inactive => "alert-warning",
-        DataAccessLayer.Enums.CustomerStatus.Deceased => "alert-danger",
-        DataAccessLayer.Enums.CustomerStatus.Blacklisted => "alert-dark",
-        _ => "alert-secondary"
-    };
-
-    var iconClass = Model.Customer.Status switch
-    {
-        DataAccessLayer.Enums.CustomerStatus.Inactive => "bi-pause-circle-fill",
-        DataAccessLayer.Enums.CustomerStatus.Deceased => "bi-x-octagon-fill",
-        DataAccessLayer.Enums.CustomerStatus.Blacklisted => "bi-shield-exclamation",
-        _ => "bi-question-circle-fill"
-    };
-}
-
-@if (Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active)
-{
-    <div class="alert @alertClass d-flex align-items-center mt-3" role="alert">
-        <i class="bi @iconClass me-2"></i>
-        @statusMessage
-    </div>
-}
-<!-- Customer Info -->
-<div class="card mt-4 shadow-sm mb-4">
+<!-- 🎫 Customer Info -->
+<div class="card shadow-sm mt-4 mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Customer Overview</h5>
         <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">← Back to list</a>
     </div>
-
     <div class="card-body">
-        <div class="card-body">
         <div class="row">
-            <!-- Left: Info -->
-            <div class="col-md-6 border-end">
+            <!-- ℹ️ Left: Info -->
+            <div class="col-md-6 border-end text-center">
                 <div class="text-center mb-3">
                     <img src="https://flagcdn.com/64x48/@(Model.Customer.CountryCode.ToLower()).png"
-                         alt="@Model.Customer.Country flag"
                          class="rounded border shadow-sm mb-2" />
                     <h4 class="fw-bold">@Model.Customer.Givenname</h4>
-                    <p class="text-muted">Customer ID: <strong>@Model.Customer.CustomerId</strong></p>
+                    <p class="text-muted small">Customer ID: <strong>@Model.Customer.CustomerId</strong></p>
                 </div>
 
-                <dl class="row">
+                <dl class="row small">
                     <dt class="col-sm-4">Status</dt>
                     <dd class="col-sm-8">
                         @switch (Model.Customer.Status)
                         {
                             case DataAccessLayer.Enums.CustomerStatus.Active:
-                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> Active</span>
+                                <i class="bi bi-check-circle-fill text-success fs-5" title="Active"></i>
                                 break;
                             case DataAccessLayer.Enums.CustomerStatus.Inactive:
-                                <span class="badge bg-warning text-dark"><i class="bi bi-pause-circle-fill me-1"></i> Inactive</span>
+                                <i class="bi bi-pause-circle-fill text-warning fs-5" title="Inactive"></i>
                                 break;
                             case DataAccessLayer.Enums.CustomerStatus.Blacklisted:
-                                <span class="badge bg-dark"><i class="bi bi-slash-circle-fill me-1"></i> Blacklisted</span>
+                                <i class="bi bi-slash-circle-fill text-dark fs-5" title="Blacklisted"></i>
                                 break;
                             case DataAccessLayer.Enums.CustomerStatus.Deceased:
-                                <span class="badge bg-danger"><i class="bi bi-x-octagon-fill me-1"></i> Deceased</span>
+                                <i class="bi bi-x-octagon-fill text-danger fs-5" title="Deceased"></i>
                                 break;
                             default:
-                                <span class="badge bg-secondary"><i class="bi bi-question-circle-fill me-1"></i> Unknown</span>
+                                <i class="bi bi-question-circle-fill text-secondary fs-5" title="Unknown"></i>
                                 break;
                         }
                     </dd>
@@ -102,124 +57,139 @@
                     <dd class="col-sm-8 text-primary fw-semibold">@Model.TotalBalance</dd>
                 </dl>
 
+                <!-- Full Info-knapp -->
                 <div class="d-grid mt-3">
-                    <button class="btn btn-outline-primary" onclick="loadMoreCustomerInfo(@Model.Customer.CustomerId)">
+                    <button class="btn btn-outline-dark" onclick="loadMoreCustomerInfo(@Model.Customer.CustomerId)">
                         <i class="bi bi-info-circle me-1"></i> Full Info
                     </button>
                 </div>
             </div>
 
-            <!-- Right: Actions -->
-            <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
-                <div class="d-grid gap-2 w-100 px-3">
-                    <a asp-page="./Manage" asp-route-id="@Model.Customer.CustomerId" class="btn btn-primary w-100">
-                        <i class="bi bi-pencil-square me-1"></i> Edit
-                    </a>
+            <!-- ⚙️ Right: Actions -->
+            <div class="col-md-6 d-grid gap-2">
+                <!-- Redigera-knapp -->
+                <a asp-page="./Manage" asp-route-id="@Model.Customer.CustomerId" class="btn btn-dark w-100">
+                    <i class="bi bi-pencil-square me-1"></i> Edit
+                </a>
 
-                    <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Customer.CustomerId"
-                          onsubmit="return confirm('Are you sure you want to delete this customer?');">
-                        <button type="submit" class="btn btn-danger w-100">
-                            <i class="bi bi-trash me-1"></i> Delete
+                <!-- Ta bort-knapp -->
+                <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Customer.CustomerId"
+                      onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                    <button type="submit" class="btn btn-outline-dark w-100">
+                        <i class="bi bi-trash me-1"></i> Delete
+                    </button>
+                </form>
+
+                <hr class="my-2" />
+                <div class="text-muted small text-center mb-2">Status Actions</div>
+
+                @if (Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active)
+                {
+                    <!-- Aktivera -->
+                    <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customer.CustomerId">
+                        <button type="submit" class="btn btn-dark w-100">
+                            <i class="bi bi-check-circle me-1"></i> Activate
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <!-- Inaktivera -->
+                    <form method="post" asp-page-handler="Deactivate" asp-route-id="@Model.Customer.CustomerId">
+                        <button type="submit" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-pause-circle me-1"></i> Deactivate
                         </button>
                     </form>
 
-                    <hr class="my-2" />
-                    <div class="text-muted small text-center mb-2">Status Actions</div>
+                    <!-- Blacklist -->
+                    <form method="post" asp-page-handler="Blacklist" asp-route-id="@Model.Customer.CustomerId">
+                        <button type="submit" class="btn btn-outline-dark w-100">
+                            <i class="bi bi-slash-circle me-1"></i> Blacklist
+                        </button>
+                    </form>
 
-                    @if (Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active)
-                    {
-                        <form method="post" asp-page-handler="Activate" asp-route-id="@Model.Customer.CustomerId">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-check-circle me-1"></i> Activate
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <form method="post" asp-page-handler="Deactivate" asp-route-id="@Model.Customer.CustomerId">
-                            <button type="submit" class="btn btn-warning w-100">
-                                <i class="bi bi-x-circle me-1"></i> Deactivate
-                            </button>
-                        </form>
-                        <form method="post" asp-page-handler="Blacklist" asp-route-id="@Model.Customer.CustomerId">
-                            <button type="submit" class="btn btn-dark w-100">
-                                <i class="bi bi-slash-circle me-1"></i> Blacklist
-                            </button>
-                        </form>
-                        <form method="post" asp-page-handler="Deceased" asp-route-id="@Model.Customer.CustomerId">
-                            <button type="submit" class="btn btn-outline-danger w-100">
-                                <i class="bi bi-skull-crossbones me-1"></i> Mark Deceased
-                            </button>
-                        </form>
-                    }
-                </div>
+                    <!-- Deceased (behåller röd för signal) -->
+                    <form method="post" asp-page-handler="Deceased" asp-route-id="@Model.Customer.CustomerId">
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            <i class="bi bi-skull-crossbones me-1"></i> Mark Deceased
+                        </button>
+                    </form>
+                }
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- Accounts -->
-<div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
+<!-- 💼 Accounts -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-wallet2 me-2"></i>Accounts</h5>
     </div>
     <div class="card-body">
         @if (Model.Account.Count == 0)
         {
-            <p class="text-muted">This customer has no accounts </p>
+            <p class="text-muted">This customer has no accounts.</p>
         }
         else
         {
-            <table class="table table-hover table-bordered table-striped table-sm align-middle">
-                <thead class="table-light">
+            <table class="table table-hover table-striped table-bordered table-sm align-middle">
+                <thead class="table-light text-center">
                     <tr>
-                        <th><i class="bi bi-hash"></i> Account ID</th>
-                        <th><i class="bi bi-currency-dollar"></i> Balance</th>
+                        <th>Account ID</th>
+                        
                         <th>Status</th>
+                        <th>Balance</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-center">
                     @foreach (var account in Model.Account)
                     {
                         <tr>
+                            <!-- Account ID-länk i kontolistan -->
                             <td>
-                                    @if (Model.Customer.Status == DataAccessLayer.Enums.CustomerStatus.Active)
-                                    {
-                                        <a asp-page="/AccountPage/Details"
-                                           asp-route-id="@account.AccountId"
-                                           asp-route-customerId="@Model.Customer.CustomerId"
-                                           class="btn btn-sm btn-outline-primary"
-                                           title="View account">
-                                            <i class="bi bi-eye"></i> @account.AccountId
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-sm btn-outline-secondary" disabled
-                                                title="Disabled due to customer status">
-                                            <i class="bi bi-eye-slash"></i> @account.AccountId
-                                        </button>
-                                    }
-                            </td>
-                            <td>@account.Balance.ToString("C")</td>
-                            <td>
-                                @if (account.AccountStatus == DataAccessLayer.Enums.AccountStatus.Active)
+                                @if (Model.Customer.Status == DataAccessLayer.Enums.CustomerStatus.Active)
                                 {
-                                    <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> Active</span>
+                                    <a asp-page="/AccountPage/Details"
+                                       asp-route-id="@account.AccountId"
+                                       asp-route-customerId="@Model.Customer.CustomerId"
+                                       class="btn btn-sm btn-outline-dark"
+                                       title="View account">
+                                        <i class="bi bi-eye"></i> @account.AccountId
+                                    </a>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary"><i class="bi bi-x-circle-fill me-1"></i> Inactive</span>
+                                    <button class="btn btn-sm btn-outline-secondary" disabled
+                                            title="Disabled due to customer status">
+                                        <i class="bi bi-eye-slash"></i> @account.AccountId
+                                    </button>
                                 }
                             </td>
+                            <td class="text-center">
+                                @switch (account.AccountStatus)
+                                {
+                                    case DataAccessLayer.Enums.AccountStatus.Active:
+                                        <i class="bi bi-check-circle-fill text-success fs-5" title="Active"></i>
+                                        break;
+                                    case DataAccessLayer.Enums.AccountStatus.Inactive:
+                                        <i class="bi bi-pause-circle-fill text-warning fs-5" title="Inactive"></i>
+                                        break;
+                                    case DataAccessLayer.Enums.AccountStatus.Suspended:
+                                        <i class="bi bi-slash-circle-fill text-danger fs-5" title="Suspended"></i>
+                                        break;
+                                    default:
+                                        <i class="bi bi-question-circle-fill text-secondary fs-5" title="Unknown"></i>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-center">@account.Balance.ToString("C")</td>
                         </tr>
                     }
                 </tbody>
             </table>
         }
 
-        <!-- Create Account -->
+        <!-- Create Account Form -->
         <form method="post" asp-page-handler="CreateAccount" asp-route-customerId="@Model.Customer.CustomerId">
             <div class="row g-2 align-items-end mt-3">
                 <div class="col-md-6">
@@ -233,26 +203,22 @@
                     </select>
                 </div>
                 <div class="col-md-6 d-grid">
-                        <button type="submit" class="btn btn-primary"
-                        @(Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active ? "disabled" : "")>
-                            <i class="bi bi-plus-circle me-1"></i> Create Account
-                        </button>
+                    <button type="submit" class="btn btn-dark"
+                    @(Model.Customer.Status != DataAccessLayer.Enums.CustomerStatus.Active ? "disabled" : "")>
+                        <i class="bi bi-plus-circle me-1"></i> Create Account
+                    </button>
                 </div>
             </div>
         </form>
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="alert alert-danger mt-3">
-                Please fix the errors above before continuing.
-            </div>
-        }
     </div>
 </div>
 
 <!-- Transactions -->
-<div class="card mb-5">
-    <div class="card-header">
-        <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Latest 10 Transactions</h5>
+<div class="card mb-5 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-clock-history me-2"></i> Latest 10 Transactions
+        </h5>
     </div>
     <div class="card-body">
         @if (Model.Transactions.Count == 0)
@@ -261,49 +227,54 @@
         }
         else
         {
-            <table class="table table-striped table-sm table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Account ID</th>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Balance</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var t in Model.Transactions)
-                    {
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table-sm align-middle table-striped">
+                    <thead class="table-light text-center">
                         <tr>
-                            <td>@t.AccountId</td>
-                            <td>@t.Date.ToString("yyyy-MM-dd")</td>
-                            <td>@t.Type</td>
-                            <td>
-                                @if (t.Amount >= 0)
-                                {
-                                    <span class="text-success fw-semibold">
-                                        <i class="bi bi-arrow-down-circle me-1"></i> @t.Amount.ToString("C")
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="text-danger fw-semibold">
-                                        <i class="bi bi-arrow-up-circle me-1"></i> @t.Amount.ToString("C")
-                                    </span>
-                                }
-                            </td>
-                            <td>@t.Balance.ToString("C")</td>
-                            <td>@t.Description</td>
+                            <th><i class="bi bi-hash"></i> Account</th>
+                            <th><i class="bi bi-pencil-square"></i> Description</th>
+                            <th><i class="bi bi-repeat"></i> Type</th>
+                            <th><i class="bi bi-calendar-event"></i> Date</th>
+                            <th><i class="bi bi-currency-exchange"></i> Amount</th>
+                            <th><i class="bi bi-wallet2"></i> Balance</th>
+                            
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in Model.Transactions)
+                        {
+                            <tr>
+                                <td class="text-center">@t.AccountId</td>
+                                <td>@t.Description</td>
+                                <td class="text-center">@t.Type</td>
+                                <td class="text-end">@t.Date.ToString("yyyy-MM-dd")</td>
+                                <td class="fw-semibold text-end">
+                                    @if (t.Amount >= 0)
+                                    {
+                                        <span class="text-success">
+                                            <i class="bi bi-arrow-down-circle me-1"></i> @t.Amount.ToString("C")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">
+                                            <i class="bi bi-arrow-up-circle me-1"></i> @t.Amount.ToString("C")
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end">@t.Balance.ToString("C")</td>
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
 </div>
 
-<!-- Modal -->
+
+<!-- Modal for Full Info -->
 <div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow rounded-3">
