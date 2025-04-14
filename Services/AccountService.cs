@@ -84,6 +84,21 @@ namespace Services
                 })
                 .ToListAsync();
         }
+        public async Task<List<AccountSummaryDTO>> GetAccountSummaryListAsync()
+        {
+            return await _dbContext.Dispositions
+                .Where(d => d.Type == "OWNER")
+                .Select(d => new AccountSummaryDTO
+                {
+                    AccountId = d.AccountId,
+                    CustomerName = d.Customer.Givenname + " " + d.Customer.Surname,
+                    Created = d.Account.Created,
+                    Balance = d.Account.Balance,
+                    Frequency = d.Account.Frequency,
+                    AccountStatus = d.Account.AccountStatus
+                })
+                .ToListAsync();
+        }
 
     }
 }
