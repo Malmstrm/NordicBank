@@ -15,10 +15,12 @@ namespace NordicBank.Pages.Report
         }
 
         public List<CountryReportDTO> CountryReports { get; set; }
+        public CustomerActivityDTO CustomerActivity { get; set; }
 
         public async Task OnGetAsync()
         {
             CountryReports = await _service.GetDetailedCountryReportAsync();
+            CustomerActivity = await _service.GetCustomerActivityAsync();
         }
 
     }

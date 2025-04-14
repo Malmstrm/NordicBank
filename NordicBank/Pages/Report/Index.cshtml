@@ -4,6 +4,35 @@
     ViewData["Title"] = "Summary Reports";
 }
 
+<h3 class="mb-3">👥 Kundaktivitet</h3>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-start border-success border-4">
+            <div class="card-body">
+                <h6 class="text-muted">📅 Aktiva kunder (90 dagar)</h6>
+                <h2 class="fw-bold text-success">@Model.CustomerActivity.ActiveCustomers</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-start border-danger border-4">
+            <div class="card-body">
+                <h6 class="text-muted">🧊 Inaktiva kunder (12 månader)</h6>
+                <h2 class="fw-bold text-danger">@Model.CustomerActivity.InactiveCustomers</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-start border-primary border-4">
+            <div class="card-body">
+                <h6 class="text-muted">👥 Nya kunder (30 dagar)</h6>
+                <h2 class="fw-bold text-primary">@Model.CustomerActivity.NewCustomers</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
 <h2 class="mb-4">📊 Detailed Country Report</h2>
 
 <table class="table table-bordered table-striped shadow-sm">
@@ -42,3 +71,4 @@
         }
     </tbody>
 </table>
+
