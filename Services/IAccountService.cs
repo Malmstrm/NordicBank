@@ -10,5 +10,6 @@ namespace Services
         Task<bool> UpdateStatusAsync(int accountId, AccountStatus newStatus);
         Task<int> GetAccountCountAsync(int customerId);
         Task<decimal> GetTotalBalanceAsync(int customerId);
+        Task<List<AccountSummaryDTO>> GetAllAccountSummariesAsync();
     }
 }
