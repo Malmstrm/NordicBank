@@ -7,7 +7,9 @@
 <div class="card shadow-sm mt-4 mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>Customer Overview</h5>
-        <a asp-page="./Manage" class="btn btn-sm btn-primary">➕ Create new customer</a>
+        <a asp-page="./Manage" class="btn btn-sm btn-dark">
+            <i class="bi bi-person-plus-fill me-1"></i> Create Customer
+        </a>
     </div>
 
     <div class="card-body">
@@ -15,7 +17,7 @@
         <form method="get" class="mb-3">
             <div class="input-group">
                 <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Search by name or city..." />
-                <button type="submit" class="btn btn-outline-primary">
+                <button type="submit" class="btn btn-outline-dark">
                     <i class="bi bi-search"></i> Search
                 </button>
             </div>
@@ -27,19 +29,69 @@
                 <thead class="table-light text-center">
                     <tr>
                         <th>
-                            <a asp-page="./Index" asp-route-sortColumn="Id" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Request.Query["searchTerm"]">ID</a>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Id"
+                               asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Request.Query["searchTerm"]"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                ID
+                                @if (Model.SortColumn == "Id")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
                         </th>
                         <th>
-                            <a asp-page="./Index" asp-route-sortColumn="Name" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Request.Query["searchTerm"]">Name</a>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Name"
+                               asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Request.Query["searchTerm"]"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                Name
+                                @if (Model.SortColumn == "Name")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
                         </th>
                         <th>
-                            <a asp-page="./Index" asp-route-sortColumn="Adress" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Request.Query["searchTerm"]">Address</a>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Adress"
+                               asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Request.Query["searchTerm"]"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                Address
+                                @if (Model.SortColumn == "Adress")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
                         </th>
                         <th>
-                            <a asp-page="./Index" asp-route-sortColumn="City" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Request.Query["searchTerm"]">City</a>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="City"
+                               asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Request.Query["searchTerm"]"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                City
+                                @if (Model.SortColumn == "City")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
                         </th>
                         <th>
-                            <a asp-page="./Index" asp-route-sortColumn="SSN" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Request.Query["searchTerm"]">SSN</a>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="SSN"
+                               asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Request.Query["searchTerm"]"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                SSN
+                                @if (Model.SortColumn == "SSN")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
                         </th>
                         <th>Actions</th>
                     </tr>
@@ -52,17 +104,15 @@
                             <td>@c.Givenname</td>
                             <td>@c.Streetaddress</td>
                             <td>@c.City</td>
-                            <td>@c.NationalId</td>
+                            <td class="text-end">@c.NationalId</td>
                             <td class="text-center d-flex justify-content-center align-items-center gap-3">
-
-                                <!-- View-knapp som ikon -->
+                                <!-- View -->
                                 <a asp-page="./Details" asp-route-id="@c.CustomerId"
-                                   class="text-dark"
-                                   title="View Details">
-                                    <i class="bi bi-search fs-5"></i>
+                                   class="text-dark" title="View Details">
+                                    <i class="bi bi-eye-fill fs-5"></i>
                                 </a>
 
-                                <!-- Status som ikon -->
+                                <!-- Status -->
                                 @switch (c.Status)
                                 {
                                     case DataAccessLayer.Enums.CustomerStatus.Active:

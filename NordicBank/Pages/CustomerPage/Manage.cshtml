@@ -6,15 +6,19 @@
 
 <div class="card mt-4 shadow-sm">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">@ViewData["Title"]</h5>
+        <h5 class="mb-0">
+            <i class="bi @(Model.IsEdit ? "bi-pencil-square" : "bi-person-plus") me-2"></i>
+            @ViewData["Title"]
+        </h5>
         <a asp-page="./Index" class="btn btn-sm btn-outline-secondary">← Back to list</a>
     </div>
+
     <div class="card-body">
         <form method="post">
             <input type="hidden" asp-for="Customer.CustomerId" />
 
             <div class="row g-4">
-                <!-- 🧍 Vänsterkolumn -->
+                <!-- 🧍 Left Column -->
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label asp-for="Customer.Givenname" class="form-label"></label>
@@ -58,7 +62,7 @@
                     </div>
                 </div>
 
-                <!-- ☎️ Högerkolumn -->
+                <!-- ☎️ Right Column -->
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label asp-for="Customer.Country" class="form-label"></label>
@@ -100,6 +104,7 @@
                         <input asp-for="Customer.Telephonenumber" class="form-control" />
                         <span asp-validation-for="Customer.Telephonenumber" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="Customer.NationalId" class="form-label"></label>
                         <input asp-for="Customer.NationalId" class="form-control" />
@@ -107,10 +112,10 @@
                     </div>
                 </div>
 
-                <!-- ✅ Submit -->
+                <!-- ✅ Save / Cancel -->
                 <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-                    <a asp-page="./Index" class="btn btn-outline-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">💾 Save</button>
+                    <a asp-page="./Index" class="btn btn-outline-dark">Cancel</a>
+                    <button type="submit" class="btn btn-dark">💾 Save</button>
                 </div>
             </div>
         </form>
