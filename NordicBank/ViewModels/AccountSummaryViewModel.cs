@@ -8,6 +8,8 @@ namespace NordicBank.ViewModels
 
         public string CustomerName { get; set; } = string.Empty;
 
+        public int CustomerId { get; set; }
+
         public DateOnly Created { get; set; }
 
         public decimal Balance { get; set; }

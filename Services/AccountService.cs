@@ -80,7 +80,7 @@ namespace Services
                     Created = d.Account.Created,
                     Balance = d.Account.Balance,
                     Frequency = d.Account.Frequency,
-                    AccountStatus = d.Account.AccountStatus
+                    AccountStatus = d.Account.AccountStatus,
                 })
                 .ToListAsync();
         }
@@ -95,7 +95,8 @@ namespace Services
                     Created = d.Account.Created,
                     Balance = d.Account.Balance,
                     Frequency = d.Account.Frequency,
-                    AccountStatus = d.Account.AccountStatus
+                    AccountStatus = d.Account.AccountStatus,
+                    CustomerId = d.CustomerId,
                 })
                 .ToListAsync();
         }

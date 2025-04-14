@@ -62,7 +62,9 @@ namespace NordicBank.Pages.AccountSummary
                     Created = dto.Created,
                     Balance = dto.Balance,
                     Frequency = dto.Frequency,
-                    AccountStatus = dto.AccountStatus
+                    AccountStatus = dto.AccountStatus,
+                    CustomerId = dto.CustomerId
+
                 })
                 .ToList();
         }

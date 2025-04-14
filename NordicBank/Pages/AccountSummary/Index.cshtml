@@ -36,7 +36,7 @@
                             <a asp-page="./Index" asp-route-sortColumn="Balance" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Model.SearchTerm">Balance</a>
                         </th>
                         <th>Frequency</th>
-                        <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,22 +48,27 @@
                             <td>@acc.Created.ToString("yyyy-MM-dd")</td>
                             <td>@acc.Balance.ToString("C0")</td>
                             <td>@acc.Frequency</td>
-                            <td>
-                                @if (acc.AccountStatus == DataAccessLayer.Enums.AccountStatus.Active)
+                            <td class="text-center d-flex justify-content-center align-items-center gap-3">
+
+                                <a asp-page="/CustomerPage/Details" asp-route-id="@acc.CustomerId"
+                                   class="text-dark" title="View Customer">
+                                    <i class="bi bi-search fs-5"></i>
+                                </a>
+
+                                @switch (acc.AccountStatus)
                                 {
-                                    <span class="badge bg-success">Active</span>
-                                }
-                                else if (acc.AccountStatus == DataAccessLayer.Enums.AccountStatus.Inactive)
-                                {
-                                    <span class="badge bg-secondary">Inactive</span>
-                                }
-                                else if (acc.AccountStatus == DataAccessLayer.Enums.AccountStatus.Suspended)
-                                {
-                                    <span class="badge bg-danger">Suspended</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-dark">Unknown</span>
+                                    case DataAccessLayer.Enums.AccountStatus.Active:
+                                        <i class="bi bi-check-circle-fill text-success fs-5" title="Active"></i>
+                                        break;
+                                    case DataAccessLayer.Enums.AccountStatus.Inactive:
+                                        <i class="bi bi-pause-circle-fill text-warning fs-5" title="Inactive"></i>
+                                        break;
+                                    case DataAccessLayer.Enums.AccountStatus.Suspended:
+                                        <i class="bi bi-slash-circle-fill text-danger fs-5" title="Suspended"></i>
+                                        break;
+                                    default:
+                                        <i class="bi bi-question-circle-fill text-secondary fs-5" title="Unknown"></i>
+                                        break;
                                 }
                             </td>
                         </tr>

@@ -8,5 +8,7 @@ namespace NordicBank.ViewModels
         public List<AccountSummaryDTO> Accounts { get; set; } = new();
         public string? SearchTerm { get; set; }
         public string? SortOrder { get; set; }
+
+
     }
 }

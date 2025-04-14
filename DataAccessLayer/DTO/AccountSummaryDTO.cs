@@ -10,5 +10,6 @@ namespace DataAccessLayer.DTO
         public decimal Balance { get; set; }
         public string CustomerName { get; set; }
         public AccountStatus AccountStatus { get; set; }
+        public int CustomerId { get; set; }
     }
 }
