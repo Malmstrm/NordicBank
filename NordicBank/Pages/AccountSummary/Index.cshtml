@@ -6,7 +6,7 @@
 
 <div class="card shadow-sm mt-4 mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="bi bi-bank2 me-2"></i>Account Summary</h5>
+        <h5 class="mb-0"><i class="bi bi-bank2 me-2"></i>Account Overview</h5>
     </div>
 
     <div class="card-body">
@@ -14,7 +14,7 @@
         <form method="get" class="mb-3">
             <div class="input-group">
                 <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Search by customer name..." />
-                <button type="submit" class="btn btn-outline-primary">
+                <button type="submit" class="btn btn-outline-dark">
                     <i class="bi bi-search"></i> Search
                 </button>
             </div>
@@ -26,17 +26,64 @@
                 <thead class="table-light text-center">
                     <tr>
                         <th>
-                            <a asp-page="./Index" asp-route-sortColumn="AccountId" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Model.SearchTerm">Account #</a>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="AccountId"
+                               asp-route-sortOrder="@(Model.SortColumn == "AccountId" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                ID
+                                @if (Model.SortColumn == "AccountId")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
                         </th>
                         <th>
-                            <a asp-page="./Index" asp-route-sortColumn="CustomerName" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Model.SearchTerm">Customer</a>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="CustomerName"
+                               asp-route-sortOrder="@(Model.SortColumn == "CustomerName" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                Customer
+                                @if (Model.SortColumn == "CustomerName")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
                         </th>
-                        <th>Created</th>
                         <th>
-                            <a asp-page="./Index" asp-route-sortColumn="Balance" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")" asp-route-searchTerm="@Model.SearchTerm">Balance</a>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Created"
+                               asp-route-sortOrder="@(Model.SortColumn == "Created" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                Created
+                                @if (Model.SortColumn == "Created")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
                         </th>
-                        <th>Frequency</th>
-                        <th></th>
+                        <th>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Balance"
+                               asp-route-sortOrder="@(Model.SortColumn == "Balance" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               class="text-decoration-none text-dark d-flex justify-content-center align-items-center gap-1">
+                                Balance
+                                @if (Model.SortColumn == "Balance")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            Frequency
+                        </th>
+                        <th>
+                            Actions
+                        </th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -49,10 +96,14 @@
                             <td>@acc.Balance.ToString("C0")</td>
                             <td>@acc.Frequency</td>
                             <td class="text-center d-flex justify-content-center align-items-center gap-3">
+                                <a asp-page="/AccountPage/Details" asp-route-id="@acc.AccountId" asp-route-customerId="@acc.CustomerId"
+                                   class="text-dark" title="View account">
+                                    <i class="bi bi-credit-card fs-5"></i>
+                                </a>
 
                                 <a asp-page="/CustomerPage/Details" asp-route-id="@acc.CustomerId"
-                                   class="text-dark" title="View Customer">
-                                    <i class="bi bi-search fs-5"></i>
+                                   class="text-dark" title="View customer">
+                                    <i class="bi bi-people-fill me-2 fs-5"></i>
                                 </a>
 
                                 @switch (acc.AccountStatus)
