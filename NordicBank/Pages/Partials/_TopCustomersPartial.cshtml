@@ -1,21 +1,24 @@
-﻿@using NordicBank.ViewModels;
+﻿@using NordicBank.ViewModels
 @model List<TopCustomerViewModel>
 
-<table class="table table-bordered">
-    <thead>
+<table class="table table-hover table-bordered align-middle w-100 mb-0">
+    <thead class="table-dark text-white text-center">
         <tr>
+            <th style="width: 50px;">#</th>
             <th>Name</th>
             <th>City</th>
             <th>Total Balance</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var customer in Model)
+    <tbody class="text-center">
+        @for (int i = 0; i < Model.Count; i++)
         {
+            var customer = Model[i];
             <tr>
+                <td><strong>@(i + 1)</strong></td>
                 <td>@customer.Name</td>
                 <td>@customer.City</td>
-                <td>@customer.TotalBalance.ToString("C")</td>
+                <td class="fw-semibold">@customer.TotalBalance.ToString("C")</td>
             </tr>
         }
     </tbody>
