@@ -13,10 +13,10 @@
 }
 
 <!-- 🏦 Account Overview -->
-<div class="card shadow-sm mt-4 mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
+<div class="card shadow-sm mt-4 mb-4 border-start border-4 border-dark w-100">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="bi bi-bank2 me-2"></i>Account Overview</h5>
-        <a asp-page="/CustomerPage/Details" asp-route-id="@Model.CustomerId" class="btn btn-sm btn-outline-secondary">← Back to Customer</a>
+        <a asp-page="/CustomerPage/Details" asp-route-id="@Model.CustomerId" class="btn btn-sm btn-outline-light">← Back to Customer</a>
     </div>
 
     <div class="card-body">
@@ -41,10 +41,10 @@
                         @switch (Model.Account.AccountStatus)
                         {
                             case DataAccessLayer.Enums.AccountStatus.Active:
-                                <i class="bi bi-check-circle-fill text-success fs-5" title="Active"></i>
+                                <i class="bi bi-check-circle-fill text-dark fs-5" title="Active"></i>
                                 break;
                             case DataAccessLayer.Enums.AccountStatus.Inactive:
-                                <i class="bi bi-pause-circle-fill text-warning fs-5" title="Inactive"></i>
+                                <i class="bi bi-pause-circle-fill text-dark fs-5" title="Inactive"></i>
                                 break;
                             case DataAccessLayer.Enums.AccountStatus.Suspended:
                                 <i class="bi bi-slash-circle-fill text-danger fs-5" title="Suspended"></i>
@@ -83,8 +83,8 @@
 </div>
 
 <!-- 💳 Account Actions -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header">
+<div class="card shadow-sm mb-4 border-start border-4 border-dark">
+    <div class="card-header bg-dark text-white">
         <h5 class="mb-0"><i class="bi bi-wallet2 me-2"></i>Account Actions</h5>
     </div>
     <div class="card-body">
@@ -125,35 +125,32 @@
 </div>
 
 <!-- 🔁 Transactions -->
-<div class="card mb-5 shadow-sm">
-    <div class="card-header">
+<div class="card mb-5 shadow-sm border-start border-4 border-dark">
+    <div class="card-header bg-dark text-white">
         <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Transactions</h5>
     </div>
-    <div class="card-body">
+    <div class="card-body p-0">
         @if (Model.Transactions.Count == 0)
         {
-            <p class="text-muted">No transactions yet.</p>
+            <p class="text-muted px-3 pt-3">No transactions yet.</p>
         }
         else
         {
             <div class="table-responsive">
-                <table class="table table-hover table-bordered table-sm align-middle table-striped">
-                    <thead class="table-light text-center">
+                <table class="table table-hover table-bordered table-sm align-middle table-striped mb-0">
+                    <thead class="table-dark text-center">
                         <tr>
-                            
                             <th><i class="bi bi-repeat"></i> Type</th>
                             <th><i class="bi bi-pencil-square"></i> Description</th>
                             <th><i class="bi bi-calendar-event"></i> Date</th>
                             <th><i class="bi bi-currency-exchange"></i> Amount</th>
                             <th><i class="bi bi-wallet2"></i> Balance</th>
-                            
                         </tr>
                     </thead>
                     <tbody id="transactionTableBody">
                         @foreach (var t in Model.Transactions)
                         {
                             <tr>
-                                
                                 <td class="text-center">@t.Type</td>
                                 <td>@t.Description</td>
                                 <td class="text-end">@t.Date.ToString("yyyy-MM-dd")</td>
@@ -172,25 +169,24 @@
                                     }
                                 </td>
                                 <td class="text-end">@t.Balance.ToString("C")</td>
-                                
                             </tr>
                         }
                     </tbody>
                 </table>
-
-                @if (Model.TotalCount > 20)
-                {
-                    <div class="text-center mt-3">
-                        <button id="load-more-btn"
-                                data-account-id="@Model.Account.AccountId"
-                                data-skip="20"
-                                data-total="@Model.TotalCount"
-                                class="btn btn-outline-dark">
-                            <i class="bi bi-arrow-down-square"></i> Load more
-                        </button>
-                    </div>
-                }
             </div>
+
+            @if (Model.TotalCount > 20)
+            {
+                <div class="text-center mt-3">
+                    <button id="load-more-btn"
+                            data-account-id="@Model.Account.AccountId"
+                            data-skip="20"
+                            data-total="@Model.TotalCount"
+                            class="btn btn-outline-dark">
+                        <i class="bi bi-arrow-down-square"></i> Load more
+                    </button>
+                </div>
+            }
         }
     </div>
 </div>
