@@ -7,13 +7,13 @@
         @if (Model.Amount >= 0)
         {
             <span class="text-success">
-                <i class="bi bi-arrow-down-circle me-1"></i> @Model.Amount.ToString("C")
+                <i class="bi bi-arrow-up-circle me-1"></i> @Model.Amount.ToString("C")
             </span>
         }
         else
         {
             <span class="text-danger">
-                <i class="bi bi-arrow-up-circle me-1"></i> @Model.Amount.ToString("C")
+                <i class="bi bi-arrow-down-circle me-1"></i> @Model.Amount.ToString("C")
             </span>
         }
     </td>
