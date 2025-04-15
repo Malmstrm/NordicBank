@@ -6,92 +6,114 @@
     Layout = "_Dashboard";
 }
 
-<!-- Sidrubrik -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 text-dark fw-bold">📊 Summary Reports</h1>
+<!-- 🏦 Hero -->
+<div class="container text-center mt-5 mb-4">
+    <h1 class="display-5 fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Summary Reports</h1>
+    <p class="lead text-muted">Get a full overview of customer and capital distribution across countries.</p>
 </div>
 
-<!-- Kundaktivitet - tre kort -->
-<div class="row mb-5">
-    <div class="col-md-4 mb-3">
-        <div class="card border-start border-4 border-success shadow-sm">
-            <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted">📅 Aktiva kunder (90 dagar)</h6>
-                <h2 class="card-title fw-bold text-success">@Model.CustomerActivity.ActiveCustomers</h2>
+<!-- 📈 Summary Cards -->
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-white shadow-sm border-start border-4 border-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1">Active (90 days)</h6>
+                            <h4 class="fw-bold mb-0 text-dark">@Model.CustomerActivity.ActiveCustomers</h4>
+                        </div>
+                        <i class="bi bi-calendar-check fs-2 text-dark"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-white shadow-sm border-start border-4 border-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1">Inactive (12+ months)</h6>
+                            <h4 class="fw-bold mb-0 text-dark">@Model.CustomerActivity.InactiveCustomers</h4>
+                        </div>
+                        <i class="bi bi-person-x fs-2 text-dark"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-white shadow-sm border-start border-4 border-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted text-uppercase mb-1">New Customers (30 days)</h6>
+                            <h4 class="fw-bold mb-0 text-dark">@Model.CustomerActivity.NewCustomers</h4>
+                        </div>
+                        <i class="bi bi-person-plus fs-2 text-dark"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
-        <div class="card border-start border-4 border-danger shadow-sm">
-            <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted">🧊 Inaktiva kunder (12 månader)</h6>
-                <h2 class="card-title fw-bold text-danger">@Model.CustomerActivity.InactiveCustomers</h2>
-            </div>
+</div>
+
+<!-- 📊 Capital per country -->
+<div class="container mb-4">
+    <div class="card shadow-sm border-start border-4 border-dark">
+        <div class="card-header bg-dark text-white">
+            <h5 class="fw-bold mb-0"><i class="bi bi-currency-exchange me-2"></i>Capital by Country</h5>
         </div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <div class="card border-start border-4 border-primary shadow-sm">
-            <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted">👥 Nya kunder (30 dagar)</h6>
-                <h2 class="card-title fw-bold text-primary">@Model.CustomerActivity.NewCustomers</h2>
-            </div>
+        <div class="card-body">
+            <canvas id="capitalChart" height="100"></canvas>
         </div>
     </div>
 </div>
 
-<!-- Kapital per land - Chart -->
-<div class="card mb-4 shadow-sm">
-    <div class="card-header bg-white border-bottom">
-        <h5 class="mb-0">💰 Kapital per land</h5>
-    </div>
-    <div class="card-body">
-        <canvas id="capitalChart" height="100"></canvas>
-    </div>
-</div>
-
-<!-- Country Details Table -->
-<div class="card shadow-sm">
-    <div class="card-header bg-white border-bottom">
-        <h5 class="mb-0">🌍 Detaljerad översikt per land</h5>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover table-striped table-bordered mb-0">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Land</th>
-                        <th>Kunder</th>
-                        <th>Konton</th>
-                        <th>Totalt kapital</th>
-                        <th>Snittsaldo</th>
-                        <th>Toppkund</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var row in Model.CountryReports)
-                    {
+<!-- 🌍 Country Detail Table -->
+<div class="container mb-5">
+    <div class="card shadow-sm border-start border-4 border-dark">
+        <div class="card-header bg-dark text-white">
+            <h5 class="fw-bold mb-0"><i class="bi bi-globe2 me-2"></i>Detailed Country Overview</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered mb-0">
+                    <thead class="table-dark text-white text-center">
                         <tr>
-                            <td>
-                                <img src="https://flagcdn.com/32x24/@(row.CountryCode.ToLower()).png" class="me-2" />
-                                @row.Country
-                            </td>
-                            <td>@row.Clients</td>
-                            <td>@row.Accounts</td>
-                            <td>@row.Capital.ToString("C0")</td>
-                            <td>@row.AverageBalance.ToString("C0")</td>
-                            <td>
-                                @if (row.TopCustomerName != null)
-                                {
-                                    <span class="fw-bold">@row.TopCustomerName</span>
-
-                                    <br />
-                                    <small class="text-muted">@row.TopCustomerBalance?.ToString("C0")</small>
-                                }
-                            </td>
+                            <th>Country</th>
+                            <th>Clients</th>
+                            <th>Accounts</th>
+                            <th>Total Capital</th>
+                            <th>Average Balance</th>
+                            <th>Top Customer</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in Model.CountryReports)
+                        {
+                            <tr class="text-center align-middle">
+                                <td class="text-start">
+                                    <img src="https://flagcdn.com/32x24/@(row.CountryCode.ToLower()).png" class="me-2 rounded shadow-sm" />
+                                    <strong>@row.Country</strong>
+                                </td>
+                                <td>@row.Clients</td>
+                                <td>@row.Accounts</td>
+                                <td>@row.Capital.ToString("C0")</td>
+                                <td>@row.AverageBalance.ToString("C0")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(row.TopCustomerName))
+                                    {
+                                        <div class="fw-semibold">@row.TopCustomerName</div>
+                                        <small class="text-muted">@row.TopCustomerBalance?.ToString("C0")</small>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -104,10 +126,10 @@
             data: {
                 labels: @Html.Raw(JsonSerializer.Serialize(Model.CountryReports.Select(c => c.Country))),
                 datasets: [{
-                    label: 'Totalt kapital (kr)',
+                    label: 'Total Capital (kr)',
                     data: @Html.Raw(JsonSerializer.Serialize(Model.CountryReports.Select(c => c.Capital))),
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(33, 37, 41, 0.7)',
+                    borderColor: 'rgba(33, 37, 41, 1)',
                     borderWidth: 1
                 }]
             },
