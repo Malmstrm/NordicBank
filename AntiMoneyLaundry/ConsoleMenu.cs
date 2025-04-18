@@ -55,18 +55,16 @@ public class ConsoleMenu
                 .Title("[yellow]Select country to scan:[/]")
                 .AddChoices("Sweden", "Finland", "Denmark", "Norway"));
 
-        var earliest = await _scanService.GetEarliestTransactionDateAsync(country);
+        // Hämta senaste scannade datum eller fall tillbaka till första transaktion
+        var startDate = await _scanService.GetLastScanDateAsync(country);
+        if (startDate == default)
+            startDate = await _scanService.GetEarliestTransactionDateAsync(country);
 
-        AnsiConsole.MarkupLine($"[blue]Earliest transaction for {country} is:[/] [bold]{earliest:yyyy-MM-dd}[/]");
+        AnsiConsole.MarkupLine($"[blue]Scanning will start from:[/] [bold]{startDate:yyyy-MM-dd}[/]");
 
-        var endDate = AnsiConsole.Prompt(
-            new TextPrompt<DateTime>("[green]Enter end date (yyyy-MM-dd):[/]")
-                .Validate(date => date >= earliest && date <= DateTime.Today
-                    ? ValidationResult.Success()
-                    : ValidationResult.Error("Date must be within the valid range."))
-        );
+        var endDate = PromptForDate(startDate, DateTime.Today); // Din metod för att välja datum med piltangenter
 
-        var result = await _scanService.RunScanAsync(country, endDate);
+        var result = await _scanService.RunScanAsync(country, startDate, endDate);
 
         AnsiConsole.MarkupLine($"\n[bold green]Scan completed![/]");
         AnsiConsole.MarkupLine($"Country: [blue]{result.Country}[/]");
@@ -75,4 +73,35 @@ public class ConsoleMenu
 
         ScanDisplay.PrintSuspicious(result.SuspiciousTransactions);
     }
+
+
+    public static DateTime PromptForDate(DateTime earliest, DateTime latest)
+    {
+        var year = AnsiConsole.Prompt(
+            new SelectionPrompt<int>()
+                .Title("[yellow]Select year:[/]")
+                .AddChoices(Enumerable.Range(earliest.Year, latest.Year - earliest.Year + 1).ToList()));
+
+        var month = AnsiConsole.Prompt(
+            new SelectionPrompt<int>()
+                .Title("[yellow]Select month:[/]")
+                .AddChoices(Enumerable.Range(1, 12).ToList()));
+
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var day = AnsiConsole.Prompt(
+            new SelectionPrompt<int>()
+                .Title("[yellow]Select day:[/]")
+                .AddChoices(Enumerable.Range(1, daysInMonth).ToList()));
+
+        var selectedDate = new DateTime(year, month, day);
+
+        if (selectedDate < earliest || selectedDate > latest)
+        {
+            AnsiConsole.MarkupLine("[red]Selected date is outside the allowed range.[/]");
+            return PromptForDate(earliest, latest); // rekursivt om fel
+        }
+
+        return selectedDate;
+    }
+
 }
