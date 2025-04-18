@@ -1,99 +1,82 @@
 ﻿using DataAccessLayer.Data;
-using DataAccessLayer.Enums;
-using DataAccessLayer.Models;
+using DataAccessLayer.DTO;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Services
+namespace Services;
+
+public class TransactionAnalyzer : ITransactionAnalyzer
 {
-    public class TransactionAnalyzer : ITransactionAnalyzer
+    private readonly NordicBankAppDataContext _db;
+
+    public TransactionAnalyzer(NordicBankAppDataContext db)
     {
-        private readonly NordicBankAppDataContext _dbContext;
+        _db = db;
+    }
 
-        public TransactionAnalyzer(NordicBankAppDataContext dbContext)
+    public async Task<DateTime> GetEarliestTransactionDateAsync(string country)
+    {
+        return await _db.Transactions
+            .Where(t => _db.Dispositions
+                .Any(d => d.AccountId == t.AccountId && d.Customer.Country == country))
+            .OrderBy(t => t.Date)
+            .Select(t => t.Date)
+            .FirstOrDefaultAsync()
+            .ContinueWith(t => t.Result.ToDateTime(TimeOnly.MinValue));
+    }
+
+    public async Task<List<SuspiciousTransactionDTO>> GetSuspiciousTransactionsAsync(string country, DateTime from, DateTime to)
+    {
+        var transactions = await _db.Transactions
+            .Where(t => t.Date >= DateOnly.FromDateTime(from) && t.Date <= DateOnly.FromDateTime(to))
+            .Include(t => t.AccountNavigation)
+            .ThenInclude(a => a.Dispositions)
+            .ThenInclude(d => d.Customer)
+            .ToListAsync();
+
+        var suspicious = new List<SuspiciousTransactionDTO>();
+
+        foreach (var tx in transactions)
         {
-            _dbContext = dbContext;
-        }
+            var customer = tx.AccountNavigation.Dispositions.FirstOrDefault(d => d.Type == "OWNER")?.Customer;
+            if (customer == null || customer.Country != country)
+                continue;
 
-        public async Task<List<SuspiciousTransaction>> AnalyzeAsync(string country, DateTime start, DateTime end)
-        {
-            var result = new List<SuspiciousTransaction>();
+            var txDate = tx.Date.ToDateTime(TimeOnly.MinValue);
 
-            var customers = await _dbContext.Customers
-                .Where(c => c.Country == country)
-                .ToListAsync();
-
-            foreach (var customer in customers)
+            if (tx.Amount > 15000)
             {
-                var accounts = await _dbContext.Dispositions
-                    .Where(d => d.CustomerId == customer.CustomerId && d.Type == "OWNER")
-                    .Include(d => d.Account)
-                    .ToListAsync();
-
-                foreach (var disposition in accounts)
+                suspicious.Add(new SuspiciousTransactionDTO
                 {
-                    var transactions = await _dbContext.Transactions
-                        .Where(t => t.AccountId == disposition.AccountId)
-                        .OrderBy(t => t.Date)
-                        .ToListAsync();
-
-                    foreach (var tx in transactions)
-                    {
-                        var txDate = tx.Date.ToDateTime(TimeOnly.MinValue);
-                        if (txDate <= start || txDate > end) continue;
-
-                        // Rule 1
-                        if (tx.Amount > 15000)
-                        {
-                            result.Add(CreateSuspicious(customer, disposition.AccountId, tx, SuspicionReason.HighAmount));
-                        }
-
-                        // Rule 2
-                        var windowSum = transactions
-                            .Where(t =>
-                                t.Date.ToDateTime(TimeOnly.MinValue) >= txDate.AddHours(-72) &&
-                                t.Date.ToDateTime(TimeOnly.MinValue) <= txDate)
-                            .Sum(t => t.Amount);
-
-                        if (windowSum > 23000)
-                        {
-                            result.Add(CreateSuspicious(customer, disposition.AccountId, tx, SuspicionReason.WindowSum));
-                        }
-                    }
-                }
+                    CustomerId = customer.CustomerId,
+                    CustomerName = customer.Givenname + " " + customer.Surname,
+                    AccountId = tx.AccountId,
+                    TransactionId = tx.TransactionId,
+                    Amount = tx.Amount,
+                    Date = txDate,
+                    Reason = "HighAmount"
+                });
             }
 
-            return result;
-        }
+            var recentWindowSum = transactions
+                .Where(t => t.AccountId == tx.AccountId)
+                .Where(t => t.Date.ToDateTime(TimeOnly.MinValue) >= txDate.AddHours(-72) && t.Date.ToDateTime(TimeOnly.MinValue) <= txDate)
+                .Sum(t => t.Amount);
 
-        public async Task<DateTime> GetEarliestTransactionDateAsync(string country)
-        {
-            var earliest = await _dbContext.Transactions
-                .Where(t =>
-                    _dbContext.Dispositions.Any(d => d.AccountId == t.AccountId && d.Customer.Country == country))
-                .OrderBy(t => t.Date)
-                .Select(t => t.Date)
-                .FirstOrDefaultAsync();
-
-            return earliest.ToDateTime(TimeOnly.MinValue);
-        }
-
-        private SuspiciousTransaction CreateSuspicious(Customer customer, int accountId, Transaction tx, SuspicionReason reason)
-        {
-            return new SuspiciousTransaction
+            if (recentWindowSum > 23000)
             {
-                CustomerId = customer.CustomerId,
-                CustomerName = $"{customer.Givenname} {customer.Surname}",
-                AccountId = accountId,
-                TransactionId = tx.TransactionId,
-                Amount = tx.Amount,
-                Date = tx.Date.ToDateTime(TimeOnly.MinValue),
-                Reason = reason
-            };
+                suspicious.Add(new SuspiciousTransactionDTO
+                {
+                    CustomerId = customer.CustomerId,
+                    CustomerName = customer.Givenname + " " + customer.Surname,
+                    AccountId = tx.AccountId,
+                    TransactionId = tx.TransactionId,
+                    Amount = recentWindowSum,
+                    Date = txDate,
+                    Reason = "WindowSum"
+                });
+            }
         }
+
+        return suspicious;
     }
 }

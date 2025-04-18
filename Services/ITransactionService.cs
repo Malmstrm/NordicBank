@@ -1,8 +1,7 @@
 ﻿using DataAccessLayer.DTO;
 using Services.Utility;
 
-namespace Services
-{
+namespace Services;
     public interface ITransactionService
     {
         Task<List<TransactionDTO>> GetTransactionsIdAsync(int accountId);
@@ -14,4 +13,3 @@ namespace Services
         Task<List<TransactionDTO>> GetTransactionsPagedAsync(int accountId, int skip, int take = 20);
         Task<ValidationResult> ValidateTransactionAsync(int accountId);
     }
-}

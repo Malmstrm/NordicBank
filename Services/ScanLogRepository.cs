@@ -1,52 +1,39 @@
 ﻿using DataAccessLayer.Data;
 using DataAccessLayer.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Services
+namespace Services;
+public class ScanLogRepository : IScanLogRepository
 {
-    public class ScanLogRepository : IScanLogRepository
+    private readonly NordicBankAppDataContext _db;
+
+    public ScanLogRepository(NordicBankAppDataContext db)
     {
-        private readonly NordicBankAppDataContext _dbContext;
+        _db = db;
+    }
 
-        public ScanLogRepository(NordicBankAppDataContext dbContext)
+    public async Task<DateTime> GetLastScanDateAsync(string country)
+    {
+        return await _db.ScanLogs
+            .Where(x => x.Country == country)
+            .OrderByDescending(x => x.EndDate)
+            .Select(x => x.EndDate)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task SaveScanLogAsync(string country, DateTime from, DateTime to, List<SuspiciousTransaction> transactions)
+    {
+        var log = new ScanLog
         {
-            _dbContext = dbContext;
-        }
+            Country = country,
+            StartDate = from,
+            EndDate = to,
+            SuspiciousCount = transactions.Count,
+            CreatedAt = DateTime.UtcNow,
+            SuspiciousTransactions = transactions
+        };
 
-        public async Task<DateTime> LoadLastScanDateAsync(string country)
-        {
-            var path = $"Progress/{country}_LastChecked.txt";
-
-            if (!File.Exists(path))
-                return DateTime.MinValue;
-
-            var content = await File.ReadAllTextAsync(path);
-            return DateTime.TryParse(content, out var parsed) ? parsed : DateTime.MinValue;
-        }
-
-        public async Task<ScanLog> SaveScanLogAsync(string country, DateTime start, DateTime end, List<SuspiciousTransaction> transactions)
-        {
-            var log = new ScanLog
-            {
-                Country = country,
-                StartDate = start,
-                EndDate = end,
-                SuspiciousCount = transactions.Count,
-                CreatedAt = DateTime.UtcNow,
-                SuspiciousTransactions = transactions
-            };
-
-            _dbContext.ScanLogs.Add(log);
-            await _dbContext.SaveChangesAsync();
-
-            SaveLastScanDate(country, end);
-
-            return log;
-        }
-
-        private void SaveLastScanDate(string country, DateTime endDate)
-        {
-            Directory.CreateDirectory("Progress");
-            File.WriteAllText($"Progress/{country}_LastChecked.txt", endDate.ToString("O"));
-        }
+        _db.ScanLogs.Add(log);
+        await _db.SaveChangesAsync();
     }
 }

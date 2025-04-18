@@ -4,7 +4,7 @@ namespace Services
 {
     public interface IScanLogRepository
     {
-        Task<DateTime> LoadLastScanDateAsync(string country);
-        Task<ScanLog> SaveScanLogAsync(string country, DateTime start, DateTime end, List<SuspiciousTransaction> transactions);
+        Task<DateTime> GetLastScanDateAsync(string country);
+        Task SaveScanLogAsync(string country, DateTime from, DateTime to, List<SuspiciousTransaction> transactions);
     }
 }

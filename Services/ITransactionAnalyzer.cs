@@ -1,10 +1,11 @@
-﻿using DataAccessLayer.Models;
+﻿using DataAccessLayer.DTO;
 
 namespace Services
 {
     public interface ITransactionAnalyzer
     {
-        Task<List<SuspiciousTransaction>> GetSuspiciousTransactionsAsync(string country, DateTime startDate, DateTime endDate);
         Task<DateTime> GetEarliestTransactionDateAsync(string country);
+        Task<List<SuspiciousTransactionDTO>> GetSuspiciousTransactionsAsync(string country, DateTime from, DateTime to);
     }
+
 }

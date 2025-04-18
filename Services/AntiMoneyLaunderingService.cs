@@ -1,36 +1,48 @@
 ﻿using DataAccessLayer.DTO;
+using DataAccessLayer.Enums;
+using DataAccessLayer.Models;
 
-namespace Services.MoneyLaundryService
+
+namespace Services
 {
     public class AntiMoneyLaunderingService : IAntiMoneyLaunderingService
     {
+        private readonly ITransactionAnalyzer _analyzer;
+        private readonly IScanLogRepository _scanLogRepo;
+        private readonly IScanResultFactory _resultFactory;
         private readonly ITransactionAnalyzer _transactionAnalyzer;
-        private readonly IScanLogRepository _scanLogRepository;
-        private readonly IScanResultFactory _scanResultFactory;
 
-        public AntiMoneyLaunderingService(
-            ITransactionAnalyzer transactionAnalyzer,
-            IScanLogRepository scanLogRepository,
-            IScanResultFactory scanResultFactory)
+        public AntiMoneyLaunderingService(ITransactionAnalyzer analyzer, IScanLogRepository scanLogRepo, IScanResultFactory resultFactory, ITransactionAnalyzer transactionAnalyzer)
         {
+            _analyzer = analyzer;
+            _scanLogRepo = scanLogRepo;
+            _resultFactory = resultFactory;
             _transactionAnalyzer = transactionAnalyzer;
-            _scanLogRepository = scanLogRepository;
-            _scanResultFactory = scanResultFactory;
         }
 
         public async Task<ScanResultDTO> RunScanAsync(string country, DateTime endDate)
         {
-            var startDate = await _scanLogRepository.LoadLastScanDateAsync(country);
+            var startDate = await _scanLogRepo.GetLastScanDateAsync(country);
             if (startDate == DateTime.MinValue)
-                startDate = await GetEarliestTransactionDateAsync(country);
+                startDate = await _analyzer.GetEarliestTransactionDateAsync(country);
 
-            var suspiciousTransactions = await _transactionAnalyzer.GetSuspiciousTransactionsAsync(country, startDate, endDate);
+            var suspiciousDtos = await _analyzer.GetSuspiciousTransactionsAsync(country, startDate, endDate);
 
-            var scanLog = await _scanLogRepository.SaveScanLogAsync(country, startDate, endDate, suspiciousTransactions);
+            var suspiciousModels = suspiciousDtos.Select(dto => new SuspiciousTransaction
+            {
+                CustomerId = dto.CustomerId,
+                CustomerName = dto.CustomerName ?? "",
+                AccountId = dto.AccountId,
+                TransactionId = dto.TransactionId,
+                Amount = dto.Amount,
+                Date = dto.Date,
+                Reason = dto.Reason == "HighAmount" ? SuspicionReason.HighAmount : SuspicionReason.WindowSum
+            }).ToList();
 
-            return _scanResultFactory.Create(scanLog, suspiciousTransactions);
+            await _scanLogRepo.SaveScanLogAsync(country, startDate, endDate, suspiciousModels);
+
+            return _resultFactory.Create(startDate, endDate, country, suspiciousDtos);
         }
-
         public async Task<DateTime> GetEarliestTransactionDateAsync(string country)
         {
             return await _transactionAnalyzer.GetEarliestTransactionDateAsync(country);

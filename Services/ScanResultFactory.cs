@@ -1,29 +1,18 @@
 ﻿using DataAccessLayer.DTO;
-using DataAccessLayer.Models;
 
-namespace Services
+namespace Services;
+
+public class ScanResultFactory : IScanResultFactory
 {
-    public class ScanResultFactory : IScanResultFactory
+    public ScanResultDTO Create(DateTime startDate, DateTime endDate, string country, List<SuspiciousTransactionDTO> transactions)
     {
-        public ScanResultDTO Create(ScanLog log, List<SuspiciousTransaction> transactions)
+        return new ScanResultDTO
         {
-            return new ScanResultDTO
-            {
-                Country = log.Country,
-                StartDate = log.StartDate,
-                EndDate = log.EndDate,
-                SuspiciousCount = transactions.Count,
-                Transactions = transactions.Select(t => new SuspiciousTransactionDTO
-                {
-                    CustomerId = t.CustomerId,
-                    CustomerName = t.CustomerName,
-                    AccountId = t.AccountId,
-                    TransactionId = t.TransactionId,
-                    Amount = t.Amount,
-                    Date = t.Date,
-                    Reason = t.Reason.ToString()
-                }).ToList()
-            };
-        }
+            Country = country,
+            StartDate = startDate,
+            EndDate = endDate,
+            SuspiciousCount = transactions.Count,
+            SuspiciousTransactions = transactions
+        };
     }
 }
