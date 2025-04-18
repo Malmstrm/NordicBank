@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Data;
+using DataAccessLayer.DTO;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,5 +36,20 @@ public class ScanLogRepository : IScanLogRepository
 
         _db.ScanLogs.Add(log);
         await _db.SaveChangesAsync();
+    }
+    public async Task<List<ScanHistoryDTO>> GetScanHistoryAsync(string country)
+    {
+        return await _db.ScanLogs
+            .Where(s => s.Country == country)
+            .OrderByDescending(s => s.CreatedAt)
+            .Select(s => new ScanHistoryDTO
+            {
+                Country = s.Country,
+                StartDate = s.StartDate,
+                EndDate = s.EndDate,
+                SuspiciousCount = s.SuspiciousCount,
+                CreatedAt = s.CreatedAt
+            })
+            .ToListAsync();
     }
 }

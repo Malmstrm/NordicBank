@@ -1,35 +1,40 @@
 ﻿using Spectre.Console;
 using DataAccessLayer.DTO;
+using Services;
 
 namespace AntiMoneyLaundry;
 
 public static class ScanDisplay
 {
-    public static void ShowSavedScanDates()
+    public static async Task ShowSavedScanDatesAsync(IAntiMoneyLaunderingService scanService)
     {
-        var dir = "Progress";
-        if (!Directory.Exists(dir))
+        var country = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("[green]Select country to view scan history:[/]")
+                .AddChoices("Sweden", "Finland", "Denmark", "Norway"));
+
+        var history = await scanService.GetScanHistoryAsync(country);
+
+        if (history.Count == 0)
         {
-            AnsiConsole.MarkupLine("[red]No scan history found.[/]");
+            AnsiConsole.MarkupLine("[red]No scan history found for this country.[/]");
             return;
         }
 
-        var files = Directory.GetFiles(dir, "*_LastChecked.txt");
-        if (files.Length == 0)
-        {
-            AnsiConsole.MarkupLine("[red]No scan timestamps found.[/]");
-            return;
-        }
+        var table = new Table()
+            .Border(TableBorder.Rounded)
+            .AddColumn("Start Date")
+            .AddColumn("End Date")
+            .AddColumn("Suspicious Count")
+            .AddColumn("Logged At");
 
-        var table = new Table();
-        table.AddColumn("Country");
-        table.AddColumn("Last Checked");
-
-        foreach (var file in files)
+        foreach (var item in history)
         {
-            var country = Path.GetFileNameWithoutExtension(file).Replace("_LastChecked", "");
-            var content = File.ReadAllText(file);
-            table.AddRow(country, content);
+            table.AddRow(
+                item.StartDate.ToString("yyyy-MM-dd"),
+                item.EndDate.ToString("yyyy-MM-dd"),
+                item.SuspiciousCount.ToString(),
+                item.CreatedAt.ToString("yyyy-MM-dd HH:mm"));
         }
 
         AnsiConsole.Write(table);
@@ -59,7 +64,7 @@ public static class ScanDisplay
                 tx.TransactionId.ToString(),
                 tx.Amount.ToString("C"),
                 tx.Date.ToString("yyyy-MM-dd"),
-                tx.Reason);
+                tx.Reason == "HighAmount" ? "[red]HighAmount[/]" : "[orange1]WindowSum[/]");
         }
 
         AnsiConsole.Write(table);

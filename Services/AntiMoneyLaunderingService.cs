@@ -50,5 +50,9 @@ namespace Services
         {
             return await _scanLogRepo.GetLastScanDateAsync(country);
         }
+        public async Task<List<ScanHistoryDTO>> GetScanHistoryAsync(string country)
+        {
+            return await _scanLogRepo.GetScanHistoryAsync(country);
+        }
     }
 }
