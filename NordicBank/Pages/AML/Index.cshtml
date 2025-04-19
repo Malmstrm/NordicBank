@@ -1,0 +1,35 @@
+﻿@page
+@model NordicBank.Pages.AML.IndexModel
+@{
+    ViewData["Title"] = "AML Scan Logs";
+}
+
+<h2>AML Scan Logs</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Country</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Suspicious Count</th>
+            <th>Created At</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ScanLogs)
+        {
+                <tr>
+                    <td>@item.Country</td>
+                    <td>@item.StartDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.EndDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.SuspiciousCount</td>
+                    <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-page="Details" asp-route-id="@item.Id">Details</a>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>

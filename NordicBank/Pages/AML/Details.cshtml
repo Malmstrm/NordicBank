@@ -1,0 +1,41 @@
+﻿@page
+@model NordicBank.Pages.AML.DetailsModel
+@{
+    ViewData["Title"] = "AML Scan Details";
+}
+
+<h2>Suspicious Transactions - @Model.Country</h2>
+<p><strong>Period:</strong> @Model.From.ToString("yyyy-MM-dd") to @Model.To.ToString("yyyy-MM-dd")</p>
+
+@if (!Model.SuspiciousTransactions.Any())
+{
+    <p class="text-success">No suspicious transactions found.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Customer</th>
+                <th>Account</th>
+                <th>Transaction</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tx in Model.SuspiciousTransactions)
+            {
+                <tr>
+                    <td>@tx.CustomerName (@tx.CustomerId)</td>
+                    <td>@tx.AccountId</td>
+                    <td>@tx.TransactionId</td>
+                    <td>@tx.Amount.ToString("C")</td>
+                    <td>@tx.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@tx.Reason</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
