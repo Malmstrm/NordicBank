@@ -4,42 +4,58 @@
     ViewData["Title"] = "AML Scan Details";
 }
 
-<h2>Suspicious Transactions - @Model.Country</h2>
-<p><strong>Period:</strong> @Model.From.ToString("yyyy-MM-dd") to @Model.To.ToString("yyyy-MM-dd")</p>
-
-@if (!Model.SuspiciousTransactions.Any())
-{
-    <p class="text-success">No suspicious transactions found.</p>
-}
-else
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Customer</th>
-                <th>Account</th>
-                <th>Transaction</th>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Reason</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var tx in Model.SuspiciousTransactions)
-            {
-                <tr>
-                    <td>@tx.CustomerName (@tx.CustomerId)</td>
-                    <td>@tx.AccountId</td>
-                    <td>@tx.TransactionId</td>
-                    <td>@tx.Amount.ToString("C")</td>
-                    <td>@tx.Date.ToString("yyyy-MM-dd")</td>
-                    <td>@tx.Reason</td>
-                </tr>
-            }
-        </tbody>
-        <a class="btn btn-secondary mb-3" asp-page="/AML/Index">
-            <i class="fas fa-arrow-left"></i> Back to Scan History
+<div class="card shadow-sm mt-4 mb-4 border-start border-4 border-dark w-100">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-flag-fill me-2"></i>Suspicious Transactions - @Model.Country
+        </h5>
+        <a asp-page="/AML/Index" class="btn btn-sm btn-light">
+            <i class="bi bi-arrow-left me-1"></i> Back to Scan History
         </a>
+    </div>
 
-    </table>
-}
+    <div class="card-body px-0">
+        <div class="px-3 pb-3">
+            <p class="mb-0">
+                <strong>Period:</strong> @Model.From.ToString("yyyy-MM-dd") to @Model.To.ToString("yyyy-MM-dd")
+            </p>
+        </div>
+
+        @if (!Model.SuspiciousTransactions.Any())
+        {
+            <div class="px-3">
+                <p class="text-success">No suspicious transactions found.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table-sm align-middle table-striped mb-0">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Customer</th>
+                            <th>Account</th>
+                            <th>Transaction</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tx in Model.SuspiciousTransactions)
+                        {
+                            <tr>
+                                <td>@tx.CustomerName (@tx.CustomerId)</td>
+                                <td class="text-center">@tx.AccountId</td>
+                                <td class="text-center">@tx.TransactionId</td>
+                                <td class="text-end">@tx.Amount.ToString("C")</td>
+                                <td class="text-center">@tx.Date.ToString("yyyy-MM-dd")</td>
+                                <td class="text-center">@tx.Reason</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

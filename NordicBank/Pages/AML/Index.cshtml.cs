@@ -1,6 +1,8 @@
 using DataAccessLayer.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using NordicBank.Infrastructure.Paging.Country;
 using NordicBank.ViewModels;
 using Services;
 
@@ -8,32 +10,37 @@ namespace NordicBank.Pages.AML
 {
     public class IndexModel : PageModel
     {
-        private readonly IAntiMoneyLaunderingService _scanService;
+        private readonly IAntiMoneyLaunderingService _amlService;
 
-        public IndexModel(IAntiMoneyLaunderingService scanService)
+        public IndexModel(IAntiMoneyLaunderingService amlService)
         {
-            _scanService = scanService;
+            _amlService = amlService;
         }
 
-        [BindProperty]
+        [BindProperty(SupportsGet = true)]
         public string SelectedCountry { get; set; } = "Sweden";
 
-        public List<string> Countries { get; } = new() { "Sweden", "Finland", "Denmark", "Norway" };
+        public List<SelectListItem> CountryOptions { get; set; } = new();
+
         public List<ScanHistoryDTO> ScanLogs { get; set; } = new();
+        public DateTime? LatestLogDate { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task OnGetAsync()
         {
-            ScanLogs = await _scanService.GetScanHistoryAsync(SelectedCountry);
-            return Page();
-        }
+            SelectedCountry ??= "Sweden"; // Valfri default
 
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (string.IsNullOrEmpty(SelectedCountry))
-                SelectedCountry = "Sweden";
+            CountryOptions = CountryInfo.All
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Name,
+                    Text = c.Name,
+                    Selected = c.Name == SelectedCountry
+                }).ToList();
 
-            ScanLogs = await _scanService.GetScanHistoryAsync(SelectedCountry);
-            return Page();
+            ScanLogs = await _amlService.GetScanHistoryAsync(SelectedCountry);
+
+            if (ScanLogs.Any())
+                LatestLogDate = ScanLogs.Max(log => log.CreatedAt);
         }
     }
 }
