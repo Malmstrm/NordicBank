@@ -37,8 +37,27 @@ namespace Services
             _dbContext.Customers.Add(customer);
             await _dbContext.SaveChangesAsync();
 
-            dto.CustomerId = customer.CustomerId;
+            var account = new Account()
+            {
+                Frequency = "Monthly",
+                Created = DateOnly.FromDateTime(DateTime.Now),
+                Balance = 0,
+                AccountStatus = AccountStatus.Inactive,
+                Dispositions = new List<Disposition>()
+                {
+                    new Disposition()
+                    {
+                        CustomerId = customer.CustomerId,
+                        Type = "Owner"
+                    }
+                }
+            };
 
+            _dbContext.Accounts.Add(account);
+            await _dbContext.SaveChangesAsync();
+
+
+            dto.CustomerId = customer.CustomerId;
             return dto;
         }
         public async Task<bool> UpdateStatusAsync(int customerId, CustomerStatus newStatus)
