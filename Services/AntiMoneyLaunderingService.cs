@@ -1,6 +1,7 @@
 ﻿using DataAccessLayer.DTO;
 using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
+using Services.Reporting;
 
 namespace Services
 {
@@ -38,6 +39,8 @@ namespace Services
             }).ToList();
 
             await _scanLogRepo.SaveScanLogAsync(country, startDate, endDate, suspiciousModels);
+
+            await ReportWriter.WriteReportAsync(country, startDate, endDate, suspiciousDtos);
 
             return _resultFactory.Create(startDate, endDate, country, suspiciousDtos);
         }

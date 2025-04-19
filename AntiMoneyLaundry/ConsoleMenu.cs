@@ -95,6 +95,10 @@ public class ConsoleMenu
         AnsiConsole.MarkupLine($"From: [blue]{result.StartDate:yyyy-MM-dd}[/] To: [blue]{result.EndDate:yyyy-MM-dd}[/]");
         AnsiConsole.MarkupLine($"Suspicious Transactions: [red]{result.SuspiciousTransactions.Count}[/]");
 
+        // 📄 Visa var rapportfilen sparats
+        var reportPath = Path.GetFullPath($"Reports/Report_{country}_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}.txt");
+        AnsiConsole.MarkupLine($"[green]Report saved to:[/] {reportPath}");
+
         if (AnsiConsole.Confirm("Do you want to view flagged transactions now?"))
         {
             ScanDisplay.PrintSuspicious(result.SuspiciousTransactions);
