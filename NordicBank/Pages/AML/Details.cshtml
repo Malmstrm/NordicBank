@@ -52,7 +52,28 @@
                                 <td>@tx.TransactionId</td>
                                 <td>@tx.Amount.ToString("C")</td>
                                 <td>@tx.Date.ToString("yyyy-MM-dd")</td>
-                                <td>@tx.Reason</td>
+                                <td class="text-center">
+                                    @switch (tx.Reason)
+                                    {
+                                        case "HighAmount":
+                                            <span class="text-danger" title="Single transaction > 15,000">
+                                                <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+                                            </span>
+                                            break;
+
+                                        case "WindowSum":
+                                            <span class="text-warning" title="Total > 23,000 in 72h window">
+                                                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                                            </span>
+                                            break;
+
+                                        default:
+                                            <span class="text-muted" title="Unknown reason">
+                                                <i class="bi bi-question-circle-fill fs-5"></i>
+                                            </span>
+                                            break;
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>
