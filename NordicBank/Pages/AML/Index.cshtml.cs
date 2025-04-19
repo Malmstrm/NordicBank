@@ -20,15 +20,18 @@ namespace NordicBank.Pages.AML
         [BindProperty(SupportsGet = true)]
         public string SelectedCountry { get; set; } = "Sweden";
 
-        public List<SelectListItem> CountryOptions { get; set; } = new();
+        [BindProperty(SupportsGet = true)]
+        public int PageNo { get; set; } = 1;
 
-        public List<ScanHistoryDTO> ScanLogs { get; set; } = new();
-        public DateTime? LatestLogDate { get; set; }
+        public int PageSize { get; set; } = 10;
+        public int TotalPages { get; set; }
+        public int CurrentPage => PageNo;
+
+        public List<SelectListItem> CountryOptions { get; set; } = new();
+        public List<ScanHistoryDTO> PagedScanLogs { get; set; } = new();
 
         public async Task OnGetAsync()
         {
-            SelectedCountry ??= "Sweden"; // Valfri default
-
             CountryOptions = CountryInfo.All
                 .Select(c => new SelectListItem
                 {
@@ -37,10 +40,15 @@ namespace NordicBank.Pages.AML
                     Selected = c.Name == SelectedCountry
                 }).ToList();
 
-            ScanLogs = await _amlService.GetScanHistoryAsync(SelectedCountry);
+            var logs = string.IsNullOrEmpty(SelectedCountry)
+                ? new List<ScanHistoryDTO>()
+                : await _amlService.GetScanHistoryAsync(SelectedCountry);
 
-            if (ScanLogs.Any())
-                LatestLogDate = ScanLogs.Max(log => log.CreatedAt);
+            TotalPages = (int)Math.Ceiling(logs.Count / (double)PageSize);
+            PagedScanLogs = logs
+                .Skip((PageNo - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
         }
     }
 }

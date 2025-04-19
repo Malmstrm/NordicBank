@@ -5,30 +5,32 @@
 }
 
 <div class="card shadow-sm mt-4 mb-4 border-start border-4 border-dark w-100">
+    <!-- 🔲 Header -->
     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-            <i class="bi bi-flag-fill me-2"></i>Suspicious Transactions - @Model.Country
+            <i class="bi bi-flag me-2"></i>Suspicious Transactions - @Model.Country
         </h5>
-        <a asp-page="/AML/Index" class="btn btn-sm btn-light">
-            <i class="bi bi-arrow-left me-1"></i> Back to Scan History
+        <small class="text-white-50">
+            <i class="bi bi-calendar-range me-1"></i>
+            Scan period: @Model.From:yyyy-MM-dd → @Model.To:yyyy-MM-dd
+        </small>
+        <a asp-page="/AML/Index" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Back
         </a>
+
     </div>
 
-    <div class="card-body px-0">
-        <div class="px-3 pb-3">
-            <p class="mb-0">
-                <strong>Period:</strong> @Model.From.ToString("yyyy-MM-dd") to @Model.To.ToString("yyyy-MM-dd")
-            </p>
-        </div>
-
-        @if (!Model.SuspiciousTransactions.Any())
+    <!-- 📋 Content -->
+    <div class="card-body px-0 pt-0">
+        @if (!Model.PagedTransactions.Any())
         {
-            <div class="px-3">
-                <p class="text-success">No suspicious transactions found.</p>
+            <div class="px-3 py-2">
+                <p class="text-success mb-0">No suspicious transactions found.</p>
             </div>
         }
         else
         {
+            <!-- 🧾 Table -->
             <div class="table-responsive">
                 <table class="table table-hover table-bordered table-sm align-middle table-striped mb-0">
                     <thead class="table-dark text-center">
@@ -42,20 +44,57 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var tx in Model.SuspiciousTransactions)
+                        @foreach (var tx in Model.PagedTransactions)
                         {
                             <tr>
                                 <td>@tx.CustomerName (@tx.CustomerId)</td>
-                                <td class="text-center">@tx.AccountId</td>
-                                <td class="text-center">@tx.TransactionId</td>
-                                <td class="text-end">@tx.Amount.ToString("C")</td>
-                                <td class="text-center">@tx.Date.ToString("yyyy-MM-dd")</td>
-                                <td class="text-center">@tx.Reason</td>
+                                <td>@tx.AccountId</td>
+                                <td>@tx.TransactionId</td>
+                                <td>@tx.Amount.ToString("C")</td>
+                                <td>@tx.Date.ToString("yyyy-MM-dd")</td>
+                                <td>@tx.Reason</td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
+
+            <!-- 📄 Pagination -->
+            <nav aria-label="AML pagination" class="px-3">
+                <ul class="pagination justify-content-center mt-3">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link text-dark"
+                               asp-page="./Details"
+                               asp-route-country="@Model.Country"
+                               asp-route-from="@Model.From.ToString("yyyy-MM-dd")"
+                               asp-route-to="@Model.To.ToString("yyyy-MM-dd")"
+                               asp-route-pageNo="@(Model.CurrentPage - 1)">
+                                « Previous
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item disabled">
+                        <span class="page-link">Page @Model.CurrentPage of @Model.TotalPages</span>
+                    </li>
+
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link text-dark"
+                               asp-page="./Details"
+                               asp-route-country="@Model.Country"
+                               asp-route-from="@Model.From.ToString("yyyy-MM-dd")"
+                               asp-route-to="@Model.To.ToString("yyyy-MM-dd")"
+                               asp-route-pageNo="@(Model.CurrentPage + 1)">
+                                Next »
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
         }
     </div>
 </div>
