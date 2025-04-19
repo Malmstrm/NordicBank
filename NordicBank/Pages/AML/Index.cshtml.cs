@@ -1,3 +1,4 @@
+using DataAccessLayer.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NordicBank.ViewModels;
@@ -7,27 +8,32 @@ namespace NordicBank.Pages.AML
 {
     public class IndexModel : PageModel
     {
-        private readonly IAntiMoneyLaunderingService _amlService;
+        private readonly IAntiMoneyLaunderingService _scanService;
 
-        public IndexModel(IAntiMoneyLaunderingService amlService)
+        public IndexModel(IAntiMoneyLaunderingService scanService)
         {
-            _amlService = amlService;
+            _scanService = scanService;
         }
 
-        public List<ScanLogViewModel> ScanLogs { get; set; } = new();
+        [BindProperty]
+        public string SelectedCountry { get; set; } = "Sweden";
 
-        public async Task OnGetAsync()
+        public List<string> Countries { get; } = new() { "Sweden", "Finland", "Denmark", "Norway" };
+        public List<ScanHistoryDTO> ScanLogs { get; set; } = new();
+
+        public async Task<IActionResult> OnGetAsync()
         {
-            var dtos = await _amlService.GetScanLogsAsync();
-            ScanLogs = dtos.Select(d => new ScanLogViewModel
-            {
-                Id = d.Id,
-                Country = d.Country,
-                StartDate = d.StartDate,
-                EndDate = d.EndDate,
-                SuspiciousCount = d.SuspiciousCount,
-                CreatedAt = d.CreatedAt
-            }).ToList();
+            ScanLogs = await _scanService.GetScanHistoryAsync(SelectedCountry);
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (string.IsNullOrEmpty(SelectedCountry))
+                SelectedCountry = "Sweden";
+
+            ScanLogs = await _scanService.GetScanHistoryAsync(SelectedCountry);
+            return Page();
         }
     }
 }

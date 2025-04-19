@@ -40,16 +40,25 @@ public class ScanLogRepository : IScanLogRepository
     public async Task<List<ScanHistoryDTO>> GetScanHistoryAsync(string country)
     {
         return await _db.ScanLogs
-            .Where(s => s.Country == country)
-            .OrderByDescending(s => s.CreatedAt)
-            .Select(s => new ScanHistoryDTO
+            .Where(x => x.Country == country)
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => new ScanHistoryDTO
             {
-                Country = s.Country,
-                StartDate = s.StartDate,
-                EndDate = s.EndDate,
-                SuspiciousCount = s.SuspiciousCount,
-                CreatedAt = s.CreatedAt
+                Id = x.Id, // 👈 viktigt!
+                Country = x.Country,
+                StartDate = x.StartDate,
+                EndDate = x.EndDate,
+                SuspiciousCount = x.SuspiciousCount,
+                CreatedAt = x.CreatedAt
             })
             .ToListAsync();
     }
+    public async Task<List<ScanLog>> GetScanWithTransactionsAsync(string country, DateTime from, DateTime to)
+    {
+        return await _db.ScanLogs
+            .Include(s => s.SuspiciousTransactions)
+            .Where(s => s.Country == country && s.StartDate >= from && s.EndDate <= to)
+            .ToListAsync();
+    }
+
 }

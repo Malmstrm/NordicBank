@@ -23,6 +23,11 @@ builder.Services.AddTransient<ICustomerService, CustomerService>();
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<ITransactionService, TransactionService>();
 
+builder.Services.AddTransient<IAntiMoneyLaunderingService, AntiMoneyLaunderingService>();
+builder.Services.AddTransient<ITransactionAnalyzer, TransactionAnalyzer>();
+builder.Services.AddTransient<IScanLogRepository, ScanLogRepository>();
+builder.Services.AddTransient<IScanResultFactory, ScanResultFactory>();
+
 
 var app = builder.Build();
 

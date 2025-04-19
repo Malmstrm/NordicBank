@@ -8,5 +8,7 @@ namespace Services
         Task<DateTime> GetEarliestTransactionDateAsync(string country);
         Task<DateTime> GetLastScanDateAsync(string country); // NY
         Task<List<ScanHistoryDTO>> GetScanHistoryAsync(string country);
+        Task<List<SuspiciousTransactionDTO>> GetSuspiciousTransactionsAsync(string country, DateTime from, DateTime to);
+
     }
 }

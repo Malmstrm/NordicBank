@@ -54,5 +54,21 @@ namespace Services
         {
             return await _scanLogRepo.GetScanHistoryAsync(country);
         }
+        public async Task<List<SuspiciousTransactionDTO>> GetSuspiciousTransactionsAsync(string country, DateTime from, DateTime to)
+        {
+            var logs = await _scanLogRepo.GetScanWithTransactionsAsync(country, from, to);
+
+            return logs.SelectMany(log => log.SuspiciousTransactions.Select(tx => new SuspiciousTransactionDTO
+            {
+                CustomerId = tx.CustomerId,
+                CustomerName = tx.CustomerName,
+                AccountId = tx.AccountId,
+                TransactionId = tx.TransactionId,
+                Amount = tx.Amount,
+                Date = tx.Date,
+                Reason = tx.Reason.ToString()
+            })).ToList();
+        }
+
     }
 }

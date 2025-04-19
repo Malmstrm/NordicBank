@@ -8,5 +8,7 @@ namespace Services
         Task<DateTime> GetLastScanDateAsync(string country);
         Task SaveScanLogAsync(string country, DateTime from, DateTime to, List<SuspiciousTransaction> transactions);
         Task<List<ScanHistoryDTO>> GetScanHistoryAsync(string country);
+        Task<List<ScanLog>> GetScanWithTransactionsAsync(string country, DateTime from, DateTime to);
+
     }
 }
