@@ -31,7 +31,7 @@ namespace NordicBank.Pages.CustomerPage
                 Customer = new CustomerViewModel();
             else
             {
-                var dto = await _customerService.GetByIdAsyn(id.Value);
+                var dto = await _customerService.GetByIdAsync(id.Value);
                 if (dto == null) return NotFound();
 
                 Customer = new CustomerViewModel

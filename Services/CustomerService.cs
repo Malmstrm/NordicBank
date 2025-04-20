@@ -31,7 +31,7 @@ namespace Services
                 Telephonecountrycode = dto.Telephonecountrycode,
                 Telephonenumber = dto.Telephonenumber,
                 Emailaddress = dto.Emailaddress,
-                CustomerStatus = DataAccessLayer.Enums.CustomerStatus.Active,
+                CustomerStatus = CustomerStatus.Active,
             };
 
             _dbContext.Customers.Add(customer);
@@ -103,7 +103,7 @@ namespace Services
 
             return true;
         }
-        public async Task<CustomerDTO?> GetByIdAsyn(int customerId)
+        public async Task<CustomerDTO?> GetByIdAsync(int customerId)
         {
             return await _dbContext.Customers
                 .Where(c => c.CustomerId == customerId)

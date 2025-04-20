@@ -12,7 +12,7 @@ namespace Services
         Task<decimal> GetTotalBalanceAsync(int customerId);
         Task<List<AccountSummaryDTO>> GetAllAccountSummariesAsync();
         Task<List<AccountSummaryDTO>> GetAccountSummaryListAsync();
-
+        Task<int> CreateAccount(int customerId, string frequency);
 
     }
 }

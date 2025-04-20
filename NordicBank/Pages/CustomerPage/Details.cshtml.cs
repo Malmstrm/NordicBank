@@ -32,7 +32,7 @@ namespace NordicBank.Pages.CustomerPage
         public string TotalBalance => Account.Sum(a => a.Balance).ToString("C");
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var dto = await _customerService.GetByIdAsyn(id);
+            var dto = await _customerService.GetByIdAsync(id);
             if (dto == null) return NotFound();
 
             Customer = new CustomerViewModel
@@ -83,6 +83,12 @@ namespace NordicBank.Pages.CustomerPage
                 .ToList();
             return Page();
         }
+        public async Task<IActionResult> OnPostCreateAccount()
+        {
+            var accountId = await _accountService.CreateAccount(Id, Frequency);
+            TempData["SuccessMessage"] = $"New account #{accountId} created!";
+            return RedirectToPage(new { id = CustomerId });
+        }
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             var success = await _customerService.DeleteAsync(id);
@@ -110,7 +116,7 @@ namespace NordicBank.Pages.CustomerPage
         }
         public async Task<PartialViewResult> OnGetMoreInfoPartialAsync(int customerId)
         {
-            var customer = await _customerService.GetByIdAsyn(customerId); // använd din befintliga DTO
+            var customer = await _customerService.GetByIdAsync(customerId); // använd din befintliga DTO
 
             var vm = new CustomerDetailsViewModel
             {

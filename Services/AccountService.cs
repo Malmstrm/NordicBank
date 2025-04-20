@@ -1,6 +1,7 @@
 ﻿using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
 using DataAccessLayer.Enums;
+using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services
@@ -100,6 +101,30 @@ namespace Services
                 })
                 .ToListAsync();
         }
+        public async Task<int> CreateAccount(int customerId, string frequency)
+        {
+            var account = new Account()
+            {
+                Created = DateOnly.FromDateTime(DateTime.Now),
+                Frequency = frequency,
+                Balance = 0,
+                AccountStatus = AccountStatus.Inactive,
+            };
 
+            _dbContext.Accounts.Add(account);
+            await _dbContext.SaveChangesAsync();
+
+            var disposition = new Disposition()
+            {
+                CustomerId = customerId,
+                AccountId = account.AccountId,
+                Type = "OWNER"
+            };
+
+            _dbContext.Dispositions.Add(disposition);
+            await _dbContext.SaveChangesAsync();
+
+            return account.AccountId;
+        }
     }
 }
