@@ -36,9 +36,12 @@ namespace NordicBank.Pages.CustomerPage
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 dtos = dtos
-                   .Where(x => x.Givenname.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                            || x.City.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                   .ToList();
+                    .Where(x =>
+                        x.Givenname.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        x.City.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        x.CustomerId.ToString().Contains(searchTerm) ||
+                        (!string.IsNullOrEmpty(x.NationalId) && x.NationalId.Contains(searchTerm)))
+                    .ToList();
             }
 
             dtos = (SortColumn, SortOrder) switch
