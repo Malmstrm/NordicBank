@@ -27,6 +27,7 @@ namespace Services.Mappings
             // Others
             CreateMap<SuspiciousTransaction, SuspiciousTransactionDTO>().ReverseMap();
             CreateMap<ScanLog, ScanHistoryDTO>().ReverseMap();
+
         }
 
     }

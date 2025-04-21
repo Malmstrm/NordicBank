@@ -92,8 +92,6 @@ namespace Services
 
             return baseData;
         }
-
-
         public async Task<CustomerActivityDTO> GetCustomerActivityAsync()
         {
             var now = DateTime.Now;
@@ -146,9 +144,6 @@ namespace Services
                 NewCustomers = newCustomerCount
             };
         }
-
-
-
         public async Task<List<TopCustomerDTO>> GetTopCustomersByCountryAsync(string country)
         {
             return await _dbContext.Customers

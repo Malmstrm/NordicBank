@@ -1,4 +1,6 @@
-﻿using DataAccessLayer.Data;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,10 +9,12 @@ namespace Services;
 public class ScanLogRepository : IScanLogRepository
 {
     private readonly NordicBankAppDataContext _db;
+    private readonly IMapper _mapper;
 
-    public ScanLogRepository(NordicBankAppDataContext db)
+    public ScanLogRepository(NordicBankAppDataContext db, IMapper mapper)
     {
         _db = db;
+        _mapper = mapper;
     }
 
     public async Task<DateTime> GetLastScanDateAsync(string country)
@@ -21,7 +25,6 @@ public class ScanLogRepository : IScanLogRepository
             .Select(x => x.EndDate)
             .FirstOrDefaultAsync();
     }
-
     public async Task SaveScanLogAsync(string country, DateTime from, DateTime to, List<SuspiciousTransaction> transactions)
     {
         var log = new ScanLog
@@ -42,15 +45,7 @@ public class ScanLogRepository : IScanLogRepository
         return await _db.ScanLogs
             .Where(x => x.Country == country)
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new ScanHistoryDTO
-            {
-                Id = x.Id, // 👈 viktigt!
-                Country = x.Country,
-                StartDate = x.StartDate,
-                EndDate = x.EndDate,
-                SuspiciousCount = x.SuspiciousCount,
-                CreatedAt = x.CreatedAt
-            })
+            .ProjectTo<ScanHistoryDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
     }
     public async Task<List<ScanLog>> GetScanWithTransactionsAsync(string country, DateTime from, DateTime to)

@@ -1,21 +1,22 @@
-﻿using DataAccessLayer.Data;
+﻿using AutoMapper;
+using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
+using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using Services.Utility;
-using DataAccessLayer.Enums;
-
 
 namespace Services
 {
     public class TransactionService : ITransactionService
     {
         private readonly NordicBankAppDataContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public TransactionService(NordicBankAppDataContext dbContext)
+        public TransactionService(NordicBankAppDataContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<TransactionResult> DepositAsync(int accountId, decimal amount)
@@ -56,8 +57,8 @@ namespace Services
             fromAccount.Balance -= amount;
             toAccount.Balance += amount;
 
-            await CreateTransactionAsync(fromAccountId, "Debit", "Transfer to " + toAccountId, -amount, fromAccount.Balance, "Transfer");
-            await CreateTransactionAsync(toAccountId, "Credit", "Transfer from " + fromAccountId, amount, toAccount.Balance, "Transfer");
+            await CreateTransactionAsync(fromAccountId, "Debit", $"Transfer to {toAccountId}", -amount, fromAccount.Balance, "Transfer");
+            await CreateTransactionAsync(toAccountId, "Credit", $"Transfer from {fromAccountId}", amount, toAccount.Balance, "Transfer");
 
             await _dbContext.SaveChangesAsync();
             return TransactionResult.Ok();
@@ -65,63 +66,44 @@ namespace Services
 
         public async Task<List<TransactionDTO>> GetTransactionsIdAsync(int accountId)
         {
-            return await _dbContext.Transactions
+            var transactions = await _dbContext.Transactions
                 .Where(t => t.AccountId == accountId)
                 .OrderByDescending(t => t.Date)
                 .ThenByDescending(t => t.TransactionId)
-                .Select(t => new TransactionDTO()
-                {
-                    Date = t.Date,
-                    Type = t.Type,
-                    Operation = t.Operation,
-                    Amount = t.Amount,
-                    Balance = t.Balance,
-                    Description = t.Symbol ?? t.Bank ?? t.Account ?? t.Operation,
-                    AccountId = accountId
-                })
+                .AsNoTracking()
                 .ToListAsync();
+
+            return _mapper.Map<List<TransactionDTO>>(transactions);
         }
+
         public async Task<List<TransactionDTO>> GetTransactionsPagedAsync(int accountId, int skip, int take = 20)
         {
-            return await _dbContext.Transactions
+            var transactions = await _dbContext.Transactions
                 .Where(t => t.AccountId == accountId)
                 .OrderByDescending(t => t.Date)
                 .ThenByDescending(t => t.TransactionId)
                 .Skip(skip)
                 .Take(take)
-                .Select(t => new TransactionDTO
-                {
-                    Date = t.Date,
-                    Type = t.Type,
-                    Operation = t.Operation,
-                    Amount = t.Amount,
-                    Balance = t.Balance,
-                    Description = t.Symbol ?? t.Bank ?? t.Account ?? t.Operation,
-                    AccountId = accountId
-                })
+                .AsNoTracking()
                 .ToListAsync();
+
+            return _mapper.Map<List<TransactionDTO>>(transactions);
         }
 
         public async Task<List<TransactionDTO>> GetLatestTransactionsCustomer(int customerId)
         {
-            return await _dbContext.Transactions
+            var transactions = await _dbContext.Transactions
                 .Where(t => _dbContext.Dispositions
                     .Any(d => d.CustomerId == customerId && d.AccountId == t.AccountId))
                 .OrderByDescending(t => t.Date)
                 .ThenByDescending(t => t.TransactionId)
                 .Take(10)
-                .Select(t => new TransactionDTO
-                {
-                    Date = t.Date,
-                    Type = t.Type,
-                    Operation = t.Operation,
-                    Amount = t.Amount,
-                    Balance = t.Balance,
-                    Description = t.Symbol ?? t.Operation,
-                    AccountId = t.AccountId
-                })
+                .AsNoTracking()
                 .ToListAsync();
+
+            return _mapper.Map<List<TransactionDTO>>(transactions);
         }
+
         public async Task CreateTransactionAsync(int accountId, string type, string operation, decimal amount, decimal balance, string? symbol = null)
         {
             var transaction = new Transaction
@@ -138,13 +120,14 @@ namespace Services
             _dbContext.Transactions.Add(transaction);
             await _dbContext.SaveChangesAsync();
         }
+
         private async Task<bool> UpdateBalanceAndLogTransactionAsync(
             int accountId, decimal amount, string type, string operation, string symbol)
         {
             var account = await _dbContext.Accounts.FindAsync(accountId);
-            if(account == null || account.AccountStatus != AccountStatus.Active) return false;
+            if (account == null || account.AccountStatus != AccountStatus.Active) return false;
 
-            if(type == "Debit" && account.Balance < amount) return false;
+            if (type == "Debit" && account.Balance < amount) return false;
 
             account.Balance += (type == "Credit" ? amount : -amount);
 
@@ -167,9 +150,9 @@ namespace Services
                 .Include(d => d.Account)
                 .FirstOrDefaultAsync(d => d.AccountId == accountId && d.Type == "OWNER");
 
-            if(disposition == null) return ValidationResult.Invalid("Account or customer not found.");
+            if (disposition == null) return ValidationResult.Invalid("Account or customer not found.");
 
-            if(disposition.Account.AccountStatus != AccountStatus.Active) return ValidationResult.Invalid("Account is not active.");
+            if (disposition.Account.AccountStatus != AccountStatus.Active) return ValidationResult.Invalid("Account is not active.");
 
             if (disposition.Customer.CustomerStatus != CustomerStatus.Active) return ValidationResult.Invalid("Customer is not active");
 
