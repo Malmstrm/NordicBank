@@ -4,6 +4,20 @@
     ViewData["Title"] = "Account Summary";
 }
 
+@functions {
+    string GetSortIcon(string column)
+    {
+        return Model.SortColumn == column
+            ? (Model.SortOrder == "asc" ? "bi-caret-up-fill" : "bi-caret-down-fill")
+            : "bi-arrow-down-up";
+    }
+
+    string ToggleSortOrder(string column)
+    {
+        return Model.SortColumn == column && Model.SortOrder == "asc" ? "desc" : "asc";
+    }
+}
+
 <div class="card shadow-sm mt-4 mb-4 border-start border-4 border-dark w-100">
     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="bi bi-bank2 me-2"></i>Account Overview</h5>
@@ -25,10 +39,62 @@
             <table class="table table-hover table-bordered table-sm align-middle table-striped mb-0">
                 <thead class="table-dark text-center">
                     <tr>
-                        <th>ID</th>
-                        <th>Customer</th>
-                        <th>Created</th>
-                        <th>Balance</th>
+                        <th>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="AccountId"
+                               asp-route-sortOrder="@(Model.SortColumn == "AccountId" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-pageNo="@Model.CurrentPage"
+                               class="text-white text-decoration-none">
+                                ID
+                                @if (Model.SortColumn == "AccountId")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="CustomerName"
+                               asp-route-sortOrder="@(Model.SortColumn == "CustomerName" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-pageNo="@Model.CurrentPage"
+                               class="text-white text-decoration-none">
+                                Customer
+                                @if (Model.SortColumn == "CustomerName")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Created"
+                               asp-route-sortOrder="@(Model.SortColumn == "Created" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-pageNo="@Model.CurrentPage"
+                               class="text-white text-decoration-none">
+                                Created
+                                @if (Model.SortColumn == "Created")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-page="./Index"
+                               asp-route-sortColumn="Balance"
+                               asp-route-sortOrder="@(Model.SortColumn == "Balance" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-pageNo="@Model.CurrentPage"
+                               class="text-white text-decoration-none">
+                                Balance
+                                @if (Model.SortColumn == "Balance")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                                }
+                            </a>
+                        </th>
                         <th>Frequency</th>
                         <th>Actions</th>
                     </tr>

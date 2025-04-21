@@ -35,4 +35,6 @@ public partial class Customer
     public virtual ICollection<Disposition> Dispositions { get; set; } = new List<Disposition>();
 
     public CustomerStatus CustomerStatus { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -96,54 +96,59 @@ namespace Services
         {
             var now = DateTime.Now;
 
-            // Konvertera till DateOnly för jämförelser med kolumner som är DateOnly
             var activeSince = DateOnly.FromDateTime(now.AddDays(-90));
             var inactiveSince = DateOnly.FromDateTime(now.AddYears(-1));
             var newSince = DateOnly.FromDateTime(now.AddDays(-30));
 
-            // Aktiva kunder = Har gjort minst en transaktion senaste 90 dagarna
-            var activeCustomerIds = await _dbContext.Transactions
-                .Where(t => t.Date >= activeSince)
-                .Select(t => t.AccountId)
-                .Distinct()
-                .Join(
-                    _dbContext.Dispositions.Where(d => d.Type == "OWNER"),
-                    accountId => accountId,
+            // 🟢 Aktiva kunder = Har gjort minst en transaktion senaste 90 dagarna
+            var activeCustomerIds = await _dbContext.Dispositions
+                .Where(d => d.Type == "OWNER")
+                .Join(_dbContext.Transactions,
                     d => d.AccountId,
-                    (accountId, d) => d.CustomerId
-                )
+                    t => t.AccountId,
+                    (d, t) => new { d.CustomerId, t.Date })
+                .Where(x => x.Date >= activeSince)
+                .Select(x => x.CustomerId)
                 .Distinct()
                 .ToListAsync();
 
-            // Inaktiva kunder = Ej gjort någon transaktion senaste året
+            // 🔴 Kunder som gjort minst en transaktion senaste året
             var recentlyActiveCustomerIds = await _dbContext.Dispositions
                 .Where(d => d.Type == "OWNER")
-                .Where(d => _dbContext.Transactions
-                    .Any(t => t.AccountId == d.AccountId && t.Date >= inactiveSince))
+                .Join(_dbContext.Transactions,
+                    d => d.AccountId,
+                    t => t.AccountId,
+                    (d, t) => new { d.CustomerId, t.Date })
+                .Where(x => x.Date >= inactiveSince)
+                .Select(x => x.CustomerId)
+                .Distinct()
+                .ToListAsync();
+
+            // Alla kunder som har minst en OWNER-disposition
+            var ownerCustomerIds = await _dbContext.Dispositions
+                .Where(d => d.Type == "OWNER")
                 .Select(d => d.CustomerId)
                 .Distinct()
                 .ToListAsync();
 
-            var allCustomerIds = await _dbContext.Customers
-                .Select(c => c.CustomerId)
-                .ToListAsync();
-
-            var inactiveCustomerIds = allCustomerIds
+            // Inaktiva = Har minst ett konto men INGEN transaktion senaste året
+            var inactiveCustomerIds = ownerCustomerIds
                 .Except(recentlyActiveCustomerIds)
                 .ToList();
 
-            // Nya kunder = Registrerade (Birthday) senaste 30 dagar
+            // 🆕 Nya kunder = Registrerade senaste 30 dagar (använder CreatedAt)
             var newCustomerCount = await _dbContext.Customers
-                .Where(c => c.Birthday >= newSince)
+                .Where(c => c.CreatedAt >= now.AddDays(-30))
                 .CountAsync();
 
             return new CustomerActivityDTO
             {
-                ActiveCustomers = activeCustomerIds.Count(),
-                InactiveCustomers = inactiveCustomerIds.Count(),
+                ActiveCustomers = activeCustomerIds.Count,
+                InactiveCustomers = inactiveCustomerIds.Count,
                 NewCustomers = newCustomerCount
             };
         }
+
         public async Task<List<TopCustomerDTO>> GetTopCustomersByCountryAsync(string country)
         {
             return await _dbContext.Customers

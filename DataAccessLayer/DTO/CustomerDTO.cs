@@ -19,5 +19,6 @@ namespace DataAccessLayer.DTO
         public string? Telephonenumber { get; set; }
         public string? Emailaddress { get; set; }
         public CustomerStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
