@@ -1,3 +1,4 @@
+using AutoMapper;
 using DataAccessLayer.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,12 +13,14 @@ namespace NordicBank.Pages.CustomerPage
         private readonly ICustomerService _customerService;
         private readonly IAccountService _accountService;
         private readonly ITransactionService _transactionService;
+        private readonly IMapper _mapper;
 
-        public DetailsModel(ICustomerService customerService, IAccountService accountService, ITransactionService transactionService)
+        public DetailsModel(ICustomerService customerService, IAccountService accountService, ITransactionService transactionService, IMapper mapper)
         {
             _customerService = customerService;
             _accountService = accountService;
             _transactionService = transactionService;
+            _mapper = mapper;
         }
         public CustomerViewModel Customer { get; set; }
         public List<AccountViewModel> Account { get; set; }
@@ -32,55 +35,21 @@ namespace NordicBank.Pages.CustomerPage
         public string TotalBalance => Account.Sum(a => a.Balance).ToString("C");
         public async Task<IActionResult> OnGetAsync(int id)
         {
+
             var dto = await _customerService.GetByIdAsync(id);
             if (dto == null) return NotFound();
 
-            Customer = new CustomerViewModel
-            {
-                CustomerId = dto.CustomerId,
-                Gender = dto.Gender,
-                Givenname = dto.Givenname,
-                Surname = dto.Surname,
-                Streetaddress = dto.Streetaddress,
-                City = dto.City,
-                Zipcode = dto.Zipcode,
-                Country = dto.Country,
-                CountryCode = dto.CountryCode,
-                Birthday = dto.Birthday,
-                NationalId = dto.NationalId,
-                Telephonecountrycode = dto.Telephonecountrycode,
-                Telephonenumber = dto.Telephonenumber,
-                Emailaddress = dto.Emailaddress,
-                Status = dto.Status
-            };
+            Customer = _mapper.Map<CustomerViewModel>(dto);
+
 
             var accountDtos = await _accountService.GetCustomerAccountAsync(dto.CustomerId);
-            Account = accountDtos.Select(a => new AccountViewModel()
-            {
-                AccountId = a.AccountId,
-                Frequency = a.Frequency,
-                Created = a.Created,
-                Balance = a.Balance,
-                AccountStatus = a.AccountStatus,
-                CustomerId = a.CustomerId,
-
-            }).ToList();
+            Account = _mapper.Map<List<AccountViewModel>>(accountDtos);
 
             var recentTransactions = await _transactionService.GetLatestTransactionsCustomer(id);
             TotalCount = recentTransactions.Count;
 
-            Transactions = recentTransactions
-                .Select(t => new TransactionViewModel()
-                {
-                    Date = t.Date,
-                    Type = t.Type,
-                    Operation = t.Operation,
-                    Amount = t.Amount,
-                    Balance = t.Balance,
-                    Description = t.Description,
-                    AccountId = t.AccountId
-                })
-                .ToList();
+            Transactions = _mapper.Map<List<TransactionViewModel>>(recentTransactions);
+
             return Page();
         }
         public async Task<IActionResult> OnPostCreateAccount()
@@ -118,26 +87,9 @@ namespace NordicBank.Pages.CustomerPage
         {
             var customer = await _customerService.GetByIdAsync(customerId); // använd din befintliga DTO
 
-            var vm = new CustomerDetailsViewModel
-            {
-                CustomerId = customer.CustomerId,
-                Givenname = customer.Givenname,
-                Surname = customer.Surname,
-                Gender = customer.Gender,
-                Streetaddress = customer.Streetaddress,
-                City = customer.City,
-                Zipcode = customer.Zipcode,
-                Country = customer.Country,
-                CountryCode = customer.CountryCode,
-                Birthday = customer.Birthday,
-                NationalId = customer.NationalId,
-                Telephonecountrycode = customer.Telephonecountrycode,
-                Telephonenumber = customer.Telephonenumber,
-                Emailaddress = customer.Emailaddress,
-                Status = customer.Status,
-                NumberOfAccounts = await _accountService.GetAccountCountAsync(customerId),
-                TotalBalance = await _accountService.GetTotalBalanceAsync(customerId)
-            };
+            var vm = _mapper.Map<CustomerDetailsViewModel>(customer);
+            vm.NumberOfAccounts = await _accountService.GetAccountCountAsync(customerId);
+            vm.TotalBalance = await _accountService.GetTotalBalanceAsync(customerId);
 
             return new PartialViewResult
             {

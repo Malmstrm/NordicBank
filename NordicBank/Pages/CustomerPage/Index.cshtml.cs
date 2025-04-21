@@ -1,3 +1,4 @@
+using AutoMapper;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NordicBank.ViewModels;
@@ -8,10 +9,12 @@ namespace NordicBank.Pages.CustomerPage
     public class IndexModel : PageModel
     {
         private readonly ICustomerService _customerService;
+        private readonly IMapper _mapper;
 
-        public IndexModel(ICustomerService customerService)
+        public IndexModel(ICustomerService customerService, IMapper mapper)
         {
             _customerService = customerService;
+            _mapper = mapper;
         }
         public List<ViewCustomerViewModel> Customers { get; set; }
 
@@ -59,16 +62,7 @@ namespace NordicBank.Pages.CustomerPage
                 .Take(PageSize)
                 .ToList();
 
-            Customers = dtos
-                .Select(x => new ViewCustomerViewModel()
-                {
-                    CustomerId = x.CustomerId,
-                    Givenname = x.Givenname,
-                    Streetaddress = x.Streetaddress,
-                    City = x.City,
-                    NationalId = x.NationalId,
-                    Status = x.Status,
-                }).ToList();
+            Customers = _mapper.Map<List<ViewCustomerViewModel>>(dtos);
         }
     }
 }

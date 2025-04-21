@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.Data;
+﻿using AutoMapper;
+using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
 using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
@@ -9,10 +10,12 @@ namespace Services
     public class AccountService : IAccountService
     {
         private readonly NordicBankAppDataContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public AccountService(NordicBankAppDataContext dbContext)
+        public AccountService(NordicBankAppDataContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
         public async Task<bool> UpdateStatusAsync(int accountId, AccountStatus newStatus)
         {
@@ -25,34 +28,42 @@ namespace Services
         }
         public async Task<List<AccountDTO>> GetCustomerAccountAsync(int customerId)
         {
-            return await _dbContext.Dispositions
-                .Where(a => a.CustomerId == customerId)
-                .Select(a => new AccountDTO()
+            var accounts = await _dbContext.Dispositions
+                .Where(d => d.CustomerId == customerId)
+                .Select(d => new
                 {
-                    AccountId = a.Account.AccountId,
-                    Frequency = a.Account.Frequency,
-                    Created = a.Account.Created,
-                    Balance = a.Account.Balance,
-                    AccountStatus = a.Account.AccountStatus,
-                    CustomerId = a.CustomerId
+                    Account = d.Account,
+                    CustomerId = d.CustomerId
                 })
+                .AsNoTracking()
                 .ToListAsync();
 
+            var accountDtos = accounts.Select(a =>
+            {
+                var dto = _mapper.Map<AccountDTO>(a.Account);
+                dto.CustomerId = a.CustomerId;
+                return dto;
+            }).ToList();
+
+            return accountDtos;
         }
         public async Task<AccountDTO?> GetAccountByIDAsync(int accountId)
         {
-            return await _dbContext.Dispositions
+            var result = await _dbContext.Dispositions
                 .Where(d => d.AccountId == accountId)
-                .Select(d => new AccountDTO
+                .Select(d => new
                 {
-                    AccountId = d.Account.AccountId,
-                    Frequency = d.Account.Frequency,
-                    Created = d.Account.Created,
-                    Balance = d.Account.Balance,
-                    AccountStatus = d.Account.AccountStatus,
+                    Account = d.Account,
                     CustomerId = d.CustomerId
                 })
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
+
+            if (result == null) return null;
+
+            var dto = _mapper.Map<AccountDTO>(result.Account);
+            dto.CustomerId = result.CustomerId;
+            return dto;
         }
         public async Task<int> GetAccountCountAsync(int customerId)
         {

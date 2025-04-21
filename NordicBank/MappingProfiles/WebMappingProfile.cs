@@ -11,6 +11,7 @@ namespace NordicBank.MappingProfiles
             // Customer
             CreateMap<CustomerDTO, CustomerViewModel>().ReverseMap();
             CreateMap<ViewCustomerDTO, ViewCustomerViewModel>().ReverseMap();
+            CreateMap<CustomerDTO, CustomerDetailsViewModel>();
 
             // Account
             CreateMap<AccountDTO, AccountViewModel>().ReverseMap();
