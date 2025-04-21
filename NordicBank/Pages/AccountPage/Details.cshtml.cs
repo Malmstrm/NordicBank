@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.Enums;
+﻿using AutoMapper;
+using DataAccessLayer.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NordicBank.ViewModels;
@@ -12,11 +13,13 @@ public class DetailsModel : PageModel
 {
     private readonly IAccountService _accountService;
     private readonly ITransactionService _transactionService;
+    private readonly IMapper _mapper;
 
-    public DetailsModel(IAccountService accountService, ITransactionService transactionService)
+    public DetailsModel(IAccountService accountService, ITransactionService transactionService, IMapper mapper)
     {
         _accountService = accountService;
         _transactionService = transactionService;
+        _mapper = mapper;
     }
 
     [BindProperty(SupportsGet = true)] public int Id { get; set; }
@@ -106,15 +109,7 @@ public class DetailsModel : PageModel
 
         foreach (var t in nextTransactions)
         {
-            var vm = new TransactionViewModel
-            {
-                Date = t.Date,
-                Type = t.Type,
-                Operation = t.Operation,
-                Amount = t.Amount,
-                Balance = t.Balance,
-                Description = t.Description
-            };
+            var vm = _mapper.Map<TransactionViewModel>(t);
 
             var rendered = await RazorPartialToString.RenderPartialViewToString(this, "_TransactionRow", vm);
             htmlBuilder.AppendLine(rendered);
@@ -127,33 +122,18 @@ public class DetailsModel : PageModel
         var dto = await _accountService.GetAccountByIDAsync(Id);
         if (dto == null) return false;
 
-        Account = new AccountViewModel
-        {
-            AccountId = dto.AccountId,
-            Frequency = dto.Frequency,
-            Created = dto.Created,
-            Balance = dto.Balance,
-            AccountStatus = dto.AccountStatus,
-            CustomerId = dto.CustomerId
-        };
+        Account = _mapper.Map<AccountViewModel>(dto);
 
         var allTransactions = await _transactionService.GetTransactionsIdAsync(Id);
         TotalCount = allTransactions.Count;
 
-        Transactions = allTransactions
-            .OrderByDescending(t => t.Date)
-            .ThenByDescending(t => t.TransactionId)
-            .Take(10)
-            .Select(t => new TransactionViewModel
-            {
-                Date = t.Date,
-                Type = t.Type,
-                Operation = t.Operation,
-                Amount = t.Amount,
-                Balance = t.Balance,
-                Description = t.Description
-            })
-            .ToList();
+        Transactions = _mapper.Map<List<TransactionViewModel>>(
+            allTransactions
+                .OrderByDescending(t => t.Date)
+                .ThenByDescending(t => t.TransactionId)
+                .Take(10)
+                .ToList()
+        );
 
         return true;
     }

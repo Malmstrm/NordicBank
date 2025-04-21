@@ -3,16 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services;
 using NordicBank.ViewModels;
+using AutoMapper;
 
 namespace NordicBank.Pages.AccountSummary
 {
     public class IndexModel : PageModel
     {
         private readonly IAccountService _accountService;
+        private readonly IMapper _mapper;
 
-        public IndexModel(IAccountService accountService)
+        public IndexModel(IAccountService accountService, IMapper mapper)
         {
             _accountService = accountService;
+            _mapper = mapper;
         }
 
         public List<AccountSummaryViewModel> Accounts { get; set; } = new();
@@ -52,21 +55,12 @@ namespace NordicBank.Pages.AccountSummary
 
             TotalPages = (int)Math.Ceiling(dtos.Count / (double)PageSize);
 
-            Accounts = dtos
-                .Skip((CurrentPage - 1) * PageSize)
-                .Take(PageSize)
-                .Select(dto => new AccountSummaryViewModel
-                {
-                    AccountId = dto.AccountId,
-                    CustomerName = dto.CustomerName,
-                    Created = dto.Created,
-                    Balance = dto.Balance,
-                    Frequency = dto.Frequency,
-                    AccountStatus = dto.AccountStatus,
-                    CustomerId = dto.CustomerId
-
-                })
-                .ToList();
+            Accounts = _mapper.Map<List<AccountSummaryViewModel>>(
+                dtos
+                    .Skip((CurrentPage - 1) * PageSize)
+                    .Take(PageSize)
+                    .ToList()
+            );
         }
     }
 

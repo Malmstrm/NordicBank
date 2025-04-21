@@ -11,7 +11,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <!-- 🏦 Account Overview -->
 <div class="card shadow-sm mt-4 mb-4 border-start border-4 border-dark w-100">
     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">

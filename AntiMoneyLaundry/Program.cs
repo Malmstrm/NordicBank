@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Services;
+using Services.Mappings;
 
 namespace AntiMoneyLaundry
 {
@@ -13,7 +14,9 @@ namespace AntiMoneyLaundry
             var services = new ServiceCollection();
 
             services.AddDbContext<NordicBankAppDataContext>(options =>
-                options.UseSqlServer("Server=localhost;Database=NordicBankAppData;Trusted_Connection=True;TrustServerCertificate=True"));
+                options.UseSqlServer("Server=localhost;Database=BankAppData;Trusted_Connection=True;TrustServerCertificate=True"));
+
+            services.AddAutoMapper(typeof(EntityToDTOProfile));
 
             services.AddScoped<IAntiMoneyLaunderingService, AntiMoneyLaunderingService>();
             services.AddScoped<ITransactionAnalyzer, TransactionAnalyzer>();
@@ -23,7 +26,7 @@ namespace AntiMoneyLaundry
             var serviceProvider = services.BuildServiceProvider();
 
             var menu = new ConsoleMenu(serviceProvider);
-            await menu.RunAsync();
+            await menu.RunAsync();  
         }
     }
 }
