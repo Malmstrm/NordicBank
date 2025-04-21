@@ -27,6 +27,8 @@ public class ConsoleMenu
                     .Title("[bold]Select an option:[/]")
                     .AddChoices("Start scanning", "View scan history", "Exit"));
 
+            Console.Clear();
+
             switch (choice)
             {
                 case "Start scanning":
@@ -49,6 +51,8 @@ public class ConsoleMenu
     }
     private async Task StartScanAsync()
     {
+        Console.Clear();
+
         var country = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("[yellow]Select country to scan (or Cancel):[/]")
@@ -72,13 +76,15 @@ public class ConsoleMenu
             AnsiConsole.MarkupLine("[grey]Scan cancelled.[/]");
             return;
         }
-
+        Console.Clear();
         AnsiConsole.MarkupLine($"\n[bold underline green]Scan Summary[/]");
         AnsiConsole.MarkupLine($"[bold]Country:[/] [blue]{country}[/]");
         AnsiConsole.MarkupLine($"[bold]Start date:[/] {startDate:yyyy-MM-dd}");
         AnsiConsole.MarkupLine($"[bold]End date:[/] {endDate:yyyy-MM-dd}");
         AnsiConsole.MarkupLine("\n[grey]Press ENTER to start scanning...[/]");
         Console.ReadLine();
+
+        Console.Clear();
 
         var result = await AnsiConsole.Status()
             .StartAsync("Scanning transactions...", async ctx =>
@@ -89,6 +95,8 @@ public class ConsoleMenu
                 ctx.SpinnerStyle(Style.Parse("green"));
                 return result;
             });
+
+        Console.Clear();
 
         AnsiConsole.MarkupLine($"\n[bold green]Scan completed![/]");
         AnsiConsole.MarkupLine($"Country: [blue]{result.Country}[/]");
