@@ -10,7 +10,12 @@ namespace Services.Mappings
         public EntityToDTOProfile()
         {
             // Customer
-            CreateMap<Customer, CustomerDTO>().ReverseMap();
+            CreateMap<Customer, CustomerDTO>()
+                .ForMember(c => c.Status, opt => opt.MapFrom(src => src.CustomerStatus))
+                .ReverseMap()
+                .ForMember(c => c.CustomerStatus, opt => opt.MapFrom(src => src.Status));
+            CreateMap<Customer, ViewCustomerDTO>()
+                .ForMember(c => c.Status, opt => opt.MapFrom(src=> src.CustomerStatus));
 
             // Account
             CreateMap<Account, AccountDTO>().ReverseMap();

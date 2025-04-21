@@ -1,4 +1,6 @@
-﻿using DataAccessLayer.Data;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using DataAccessLayer.Data;
 using DataAccessLayer.DTO;
 using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
@@ -9,32 +11,21 @@ namespace Services
     public class CustomerService : ICustomerService
     {
         private readonly NordicBankAppDataContext _dbContext;
-        public CustomerService(NordicBankAppDataContext dbContext)
+        private readonly IMapper _mapper;
+        public CustomerService(NordicBankAppDataContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<CustomerDTO> CreateAsync(CustomerDTO dto)
         {
-            var customer = new Customer
-            {
-                Gender = dto.Gender,
-                Givenname = dto.Givenname,
-                Surname = dto.Surname,
-                Streetaddress = dto.Streetaddress,
-                City = dto.City,
-                Zipcode = dto.Zipcode,
-                Country = dto.Country,
-                CountryCode = dto.CountryCode,
-                Birthday = dto.Birthday,
-                NationalId = dto.NationalId,
-                Telephonecountrycode = dto.Telephonecountrycode,
-                Telephonenumber = dto.Telephonenumber,
-                Emailaddress = dto.Emailaddress,
-                CustomerStatus = CustomerStatus.Active,
-            };
 
-            _dbContext.Customers.Add(customer);
+            var entity = _mapper.Map<Customer>(dto);
+            entity.CustomerStatus = CustomerStatus.Active;
+
+
+            _dbContext.Customers.Add(entity);
             await _dbContext.SaveChangesAsync();
 
             var account = new Account()
@@ -47,7 +38,7 @@ namespace Services
                 {
                     new Disposition()
                     {
-                        CustomerId = customer.CustomerId,
+                        CustomerId = entity.CustomerId,
                         Type = "Owner"
                     }
                 }
@@ -56,9 +47,7 @@ namespace Services
             _dbContext.Accounts.Add(account);
             await _dbContext.SaveChangesAsync();
 
-
-            dto.CustomerId = customer.CustomerId;
-            return dto;
+            return _mapper.Map<CustomerDTO>(entity);
         }
         public async Task<bool> UpdateStatusAsync(int customerId, CustomerStatus newStatus)
         {
@@ -71,27 +60,13 @@ namespace Services
         }
         public async Task<CustomerDTO> UpdateAsync(CustomerDTO dto)
         {
-            var customer = await _dbContext.Customers.FindAsync(dto.CustomerId);
-            if (customer == null) return null!;
+            var entity = await _dbContext.Customers.FindAsync(dto.CustomerId);
+            if (entity == null) return null!;
 
-            customer.Gender = dto.Gender;
-            customer.Givenname = dto.Givenname;
-            customer.Surname = dto.Surname;
-            customer.Streetaddress = dto.Streetaddress;
-            customer.City = dto.City;
-            customer.Zipcode = dto.Zipcode;
-            customer.Country = dto.Country;
-            customer.CountryCode = dto.CountryCode;
-            customer.Birthday = dto.Birthday;
-            customer.NationalId = dto.NationalId;
-            customer.Telephonecountrycode = dto.Telephonecountrycode;
-            customer.Telephonenumber = dto.Telephonenumber;
-            customer.Emailaddress = dto.Emailaddress;
-            customer.CustomerStatus = dto.Status;
-
+            _mapper.Map(dto, entity);
             await _dbContext.SaveChangesAsync();
 
-            return dto;
+            return _mapper.Map<CustomerDTO>(entity);
         }
         public async Task<bool> DeleteAsync(int customerId)
         {
@@ -105,44 +80,16 @@ namespace Services
         }
         public async Task<CustomerDTO?> GetByIdAsync(int customerId)
         {
-            return await _dbContext.Customers
-                .Where(c => c.CustomerId == customerId)
-                .Select(c => new CustomerDTO()
-                {
-                    CustomerId = c.CustomerId,
-                    Gender = c.Gender,
-                    Givenname = c.Givenname,
-                    Surname = c.Surname,
-                    Streetaddress = c.Streetaddress,
-                    City = c.City,
-                    Zipcode = c.Zipcode,
-                    Country = c.Country,
-                    CountryCode = c.CountryCode,
-                    Birthday = c.Birthday,
-                    NationalId = c.NationalId,
-                    Telephonecountrycode = c.Telephonecountrycode,
-                    Telephonenumber = c.Telephonenumber,
-                    Emailaddress = c.Emailaddress,
-                    Status = c.CustomerStatus
-                })
-                .FirstOrDefaultAsync();
+            var entity = await _dbContext.Customers
+                .FirstOrDefaultAsync(c => c.CustomerId == customerId);
+            return entity == null ? null : _mapper.Map<CustomerDTO>(entity);
         }
 
         public async Task<List<ViewCustomerDTO>> GetViewAsync()
         {
             return await _dbContext.Customers
-                .Select(c => new ViewCustomerDTO()
-                {
-                    CustomerId = c.CustomerId,
-                    Givenname = c.Givenname,
-                    Streetaddress = c.Streetaddress,
-                    City = c.City,
-                    NationalId = c.NationalId,
-                    Status = c.CustomerStatus
-
-                }).ToListAsync();
+                .ProjectTo<ViewCustomerDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
-
-
     }
 }
