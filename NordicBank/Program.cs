@@ -2,6 +2,8 @@ using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Services;
+using Services.Mappings;
+using NordicBank.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<NordicBankAppDataContext>();
 builder.Services.AddRazorPages();
+
+builder.Services.AddAutoMapper(typeof(EntityToDTOProfile));
+builder.Services.AddAutoMapper(typeof(WebMappingProfile));
+
 
 builder.Services.AddTransient<DataInitializer>();
 
