@@ -42,6 +42,9 @@ namespace NordicBank.Pages.UserPage
 
         public async Task<IActionResult> OnPostDeleteAsync(string id)
         {
+            if (!ModelState.IsValid)
+                return await OnGetAsync();
+
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var success = await _userService.DeleteUserAsync(id, currentUserId);
 
@@ -54,6 +57,9 @@ namespace NordicBank.Pages.UserPage
 
         public async Task<IActionResult> OnPostToggleStatusAsync(string id)
         {
+            if (!ModelState.IsValid)
+                return await OnGetAsync();
+
             var success = await _userService.ToggleUserStatusAsync(id);
             if (!success)
                 ModelState.AddModelError(string.Empty, "Could not update user status.");

@@ -6,12 +6,13 @@ namespace NordicBank.ViewModels
     {
         public string Id { get; set; } = string.Empty;
 
-        [Required, EmailAddress]
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address format.")]
         public string Email { get; set; } = string.Empty;
 
         public bool IsActive { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Role is required.")]
         public string Role { get; set; } = string.Empty;
 
         public List<string> AvailableRoles { get; set; } = new();

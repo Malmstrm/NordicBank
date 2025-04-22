@@ -37,6 +37,9 @@ public class DetailsModel : PageModel
 
     public async Task<IActionResult> OnPostActivateAsync(int id)
     {
+        if (!ModelState.IsValid)
+            return await ReloadAndReturn();
+
         var success = await _accountService.UpdateStatusAsync(id, AccountStatus.Active);
         if (!success) return NotFound();
 
@@ -46,6 +49,9 @@ public class DetailsModel : PageModel
 
     public async Task<IActionResult> OnPostDeactivateAsync(int id)
     {
+        if (!ModelState.IsValid)
+            return await ReloadAndReturn();
+
         var success = await _accountService.UpdateStatusAsync(id, AccountStatus.Inactive);
         if (!success) return NotFound();
 
@@ -74,28 +80,30 @@ public class DetailsModel : PageModel
 
     public async Task<IActionResult> OnPostTransferAsync(int id)
     {
-        if (!ModelState.IsValid) return await ReloadAndReturn();
-
         var amountStr = Request.Form["amount"];
         var toAccountIdStr = Request.Form["toAccountId"];
 
         if (!decimal.TryParse(amountStr, out var amount) || amount <= 0)
-            ModelState.AddModelError("", "Invalid amount.");
-        else if (!int.TryParse(toAccountIdStr, out var toAccountId))
-            ModelState.AddModelError("", "Invalid target account.");
-        else if (id == toAccountId)
-            ModelState.AddModelError("", "You cannot transfer to the same account");
-        else
-        {
-            var result = await _transactionService.TransferAsync(id, toAccountId, amount);
+            ModelState.AddModelError("amount", "Invalid amount.");
 
-            if(!result.Success)
-                ModelState.AddModelError("", result.Message ?? "Transfer failed. Check balance and status.");
-            else
-            {
-                TempData["SuccessMessage"] = result.Message ?? $"Transferred {amount:C} to account {toAccountId}.";
-            }
+        if (!int.TryParse(toAccountIdStr, out var toAccountId))
+            ModelState.AddModelError("toAccountId", "Invalid target account.");
+
+        if (id == toAccountId)
+            ModelState.AddModelError("toAccountId", "You cannot transfer to the same account.");
+
+        if (!ModelState.IsValid)
+            return await ReloadAndReturn();
+
+        var result = await _transactionService.TransferAsync(id, toAccountId, amount);
+
+        if (!result.Success)
+        {
+            ModelState.AddModelError("", result.Message ?? "Transfer failed. Check balance and status.");
+            return await ReloadAndReturn();
         }
+
+        TempData["SuccessMessage"] = result.Message ?? $"Transferred {amount:C} to account {toAccountId}.";
         return await ReloadAndReturn();
     }
     public async Task<IActionResult> OnGetFetchTransactionsAsync(int accountId, int skip)

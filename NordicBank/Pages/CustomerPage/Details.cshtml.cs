@@ -54,34 +54,57 @@ namespace NordicBank.Pages.CustomerPage
         }
         public async Task<IActionResult> OnPostCreateAccount()
         {
+            if (!ModelState.IsValid || string.IsNullOrWhiteSpace(Frequency))
+            {
+                await OnGetAsync(CustomerId); 
+                ModelState.AddModelError("", "Please select a valid frequency.");
+                return Page();
+            }
+
             var accountId = await _accountService.CreateAccount(Id, Frequency);
             TempData["SuccessMessage"] = $"New account #{accountId} created!";
             return RedirectToPage(new { id = CustomerId });
         }
-        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        public async Task<IActionResult> OnPostActivateAsync(int id)
         {
-            var success = await _customerService.DeleteAsync(id);
-            if(!success) return NotFound();
+            if (!ModelState.IsValid)
+                return await OnGetAsync(id);
+
+            var success = await _customerService.UpdateStatusAsync(id, CustomerStatus.Active);
+            if (!success) return NotFound();
 
             return RedirectToPage("./Index");
         }
-        public async Task<IActionResult> OnPostActivateAsync(int id)
-             => await ChangeStatus(id, CustomerStatus.Active);
 
         public async Task<IActionResult> OnPostDeactivateAsync(int id)
-            => await ChangeStatus(id, CustomerStatus.Inactive);
-
-        public async Task<IActionResult> OnPostBlacklistAsync(int id)
-            => await ChangeStatus(id, CustomerStatus.Blacklisted);
-
-        public async Task<IActionResult> OnPostDeceasedAsync(int id)
-            => await ChangeStatus(id, CustomerStatus.Deceased);
-        private async Task<IActionResult> ChangeStatus(int id, CustomerStatus newStatus)
         {
-            var success = await _customerService.UpdateStatusAsync(id, newStatus);
-            if(!success) return NotFound();
+            if (!ModelState.IsValid)
+                return await OnGetAsync(id);
 
-            return RedirectToPage("Index");
+            var success = await _customerService.UpdateStatusAsync(id, CustomerStatus.Inactive);
+            if (!success) return NotFound();
+
+            return RedirectToPage("./Index");
+        }
+        public async Task<IActionResult> OnPostBlacklistAsync(int id)
+        {
+            if (!ModelState.IsValid)
+                return await OnGetAsync(id);
+
+            var success = await _customerService.UpdateStatusAsync(id, CustomerStatus.Blacklisted);
+            if (!success) return NotFound();
+
+            return RedirectToPage("./Index");
+        }
+        public async Task<IActionResult> OnPostDeceasedAsync(int id)
+        {
+            if (!ModelState.IsValid)
+                return await OnGetAsync(id);
+
+            var success = await _customerService.UpdateStatusAsync(id, CustomerStatus.Deceased);
+            if (!success) return NotFound();
+
+            return RedirectToPage("./Index");
         }
         public async Task<PartialViewResult> OnGetMoreInfoPartialAsync(int customerId)
         {

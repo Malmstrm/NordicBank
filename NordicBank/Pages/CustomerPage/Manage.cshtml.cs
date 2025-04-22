@@ -41,7 +41,11 @@ namespace NordicBank.Pages.CustomerPage
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid) return Page();
+            if (!ModelState.IsValid)
+            {
+                Countries = CountryInfo.All;
+                return Page();
+            }
 
             var dto = _mapper.Map<CustomerDTO>(Customer);
 
