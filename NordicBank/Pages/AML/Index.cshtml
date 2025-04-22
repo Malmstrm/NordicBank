@@ -1,102 +1,108 @@
 ﻿@page
 @model NordicBank.Pages.AML.IndexModel
 @{
-    ViewData["Title"] = "AML Scan History";
+    ViewData["Title"] = "Flagged Transactions";
 }
 
-<div class="card shadow-sm mt-4 mb-4 border-start border-4 border-dark w-100">
-    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">
-            <i class="bi bi-flag me-2"></i>Flagged Transaction Scans
-        </h5>
+<!-- 🚩 Page Header -->
+<section class="mt-5 mb-4">
+    <div class="text-center mb-4">
+        <h4 class="fw-semibold d-flex align-items-center justify-content-center gap-2 mb-1">
+            <i class="bi bi-flag"></i> Flagged Transaction Scans
+        </h4>
+        <small class="text-muted">Scans showing suspicious activity per country</small>
     </div>
 
-    <div class="card-body px-0">
-        <!-- 🔍 Filter by Country -->
-        <form method="get" class="mb-3 px-3">
-            <div class="input-group">
-                <select class="form-select" name="SelectedCountry" asp-for="SelectedCountry" asp-items="Model.CountryOptions">
-                    <option value="">-- Select Country --</option>
-                </select>
-                <button type="submit" class="btn btn-outline-dark">
-                    <i class="bi bi-search"></i> Filter
-                </button>
-            </div>
-        </form>
+    <div class="border-bottom border-2 mb-5"></div>
+</section>
 
-        <!-- 📋 Table -->
-        @if (Model.PagedScanLogs?.Any() != true)
-        {
-            <div class="px-3">
-                <p class="text-success">No logs are available for the selected country.</p>
-            </div>
-        }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered table-sm align-middle table-striped mb-0">
-                    <thead class="table-dark text-center">
+<!-- 🔍 Filter Form -->
+<section class="mb-4">
+    <form method="get" class="row g-2 justify-content-center mb-4">
+        <div class="col-md-4">
+            <select class="form-select" name="SelectedCountry" asp-for="SelectedCountry" asp-items="Model.CountryOptions">
+                <option value="">-- Select Country --</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-dark w-100">
+                <i class="bi bi-search"></i> Filter
+            </button>
+        </div>
+    </form>
+</section>
+
+<!-- 📋 Scan Logs Table -->
+<section class="mb-5">
+    @if (Model.PagedScanLogs?.Any() != true)
+    {
+        <p class="text-center text-success">No logs are available for the selected country.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered table-sm align-middle table-striped mb-0">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Flagged</th>
+                        <th>Logged At</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model.PagedScanLogs)
+                    {
                         <tr>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Flagged</th>
-                            <th>Logged At</th>
-                            <th>Details</th>
+                            <td class="text-center">@log.StartDate.ToString("yyyy-MM-dd")</td>
+                            <td class="text-center">@log.EndDate.ToString("yyyy-MM-dd")</td>
+                            <td class="text-center fw-semibold">@log.SuspiciousCount</td>
+                            <td class="text-center">@log.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="text-center">
+                                <a asp-page="/AML/Details"
+                                   asp-route-country="@log.Country"
+                                   asp-route-from="@log.StartDate.ToString("yyyy-MM-dd")"
+                                   asp-route-to="@log.EndDate.ToString("yyyy-MM-dd")"
+                                   class="btn btn-sm btn-outline-dark" title="View Details">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var log in Model.PagedScanLogs)
-                        {
-                            <tr>
-                                <td class="text-center">@log.StartDate.ToString("yyyy-MM-dd")</td>
-                                <td class="text-center">@log.EndDate.ToString("yyyy-MM-dd")</td>
-                                <td class="text-center">@log.SuspiciousCount</td>
-                                <td class="text-center">@log.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                <td class="text-center">
-                                    <a asp-page="/AML/Details"
-                                       asp-route-country="@log.Country"
-                                       asp-route-from="@log.StartDate.ToString("yyyy-MM-dd")"
-                                       asp-route-to="@log.EndDate.ToString("yyyy-MM-dd")"
-                                       class="text-dark" title="View Details">
-                                        <i class="bi bi-eye-fill fs-5"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- 📄 Pagination -->
-            <nav aria-label="ScanLog pagination" class="px-3">
-                <ul class="pagination justify-content-center mt-3">
-                    @if (Model.CurrentPage > 1)
-                    {
-                        <li class="page-item">
-                            <a class="page-link text-dark" asp-page="./Index"
-                               asp-route-SelectedCountry="@Model.SelectedCountry"
-                               asp-route-pageNo="@(Model.CurrentPage - 1)">
-                                « Previous
-                            </a>
-                        </li>
                     }
+                </tbody>
+            </table>
+        </div>
 
-                    <li class="page-item disabled">
-                        <span class="page-link">Page @Model.CurrentPage of @Model.TotalPages</span>
+        <!-- 📄 Pagination -->
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link text-dark" asp-page="./Index"
+                           asp-route-SelectedCountry="@Model.SelectedCountry"
+                           asp-route-pageNo="@(Model.CurrentPage - 1)">
+                            « Previous
+                        </a>
                     </li>
+                }
 
-                    @if (Model.CurrentPage < Model.TotalPages)
-                    {
-                        <li class="page-item">
-                            <a class="page-link text-dark" asp-page="./Index"
-                               asp-route-SelectedCountry="@Model.SelectedCountry"
-                               asp-route-pageNo="@(Model.CurrentPage + 1)">
-                                Next »
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </nav>
-        }
-    </div>
-</div>
+                <li class="page-item disabled">
+                    <span class="page-link">Page @Model.CurrentPage of @Model.TotalPages</span>
+                </li>
+
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link text-dark" asp-page="./Index"
+                           asp-route-SelectedCountry="@Model.SelectedCountry"
+                           asp-route-pageNo="@(Model.CurrentPage + 1)">
+                            Next »
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</section>
