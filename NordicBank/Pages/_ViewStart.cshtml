@@ -3,12 +3,5 @@
 @inject UserManager<IdentityUser> UserManager
 
 @{
-    @if (SignInManager.IsSignedIn(User))
-    {
-        Layout = "_Dashboard";
-    }
-    else
-    {
-        Layout = "_Layout";
-    }
+    Layout = User.Identity.IsAuthenticated ? "/Pages/Shared/_Dashboard.cshtml" : "/Pages/Shared/_Layout.cshtml";
 }
