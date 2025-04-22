@@ -16,8 +16,9 @@ namespace Services
             _mapper = mapper;
         }
 
-        public async Task<UserListDTO> GetUsersPagedAsync(string? sortOrder, int page, int pageSize)
-        {
+        public async Task<UserListDTO> GetUsersPagedAsync(string? sortOrder, int page, int pageSize, string? searchEmail = null)
+        {   
+
             var query = _userManager.Users.AsQueryable();
 
             query = sortOrder switch
@@ -27,7 +28,10 @@ namespace Services
                 "email_desc" => query.OrderByDescending(u => u.Email),
                 _ => query.OrderBy(u => u.UserName),
             };
-
+            if (!string.IsNullOrEmpty(searchEmail))
+            {
+                query = query.Where(u => u.Email.Contains(searchEmail));
+            }
             var totalCount = await query.CountAsync();
             var users = await query
                 .Skip((page - 1) * pageSize)

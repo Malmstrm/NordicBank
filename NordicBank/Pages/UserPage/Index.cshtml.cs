@@ -26,14 +26,15 @@ namespace NordicBank.Pages.UserPage
         [TempData]
         public string? StatusMessage { get; set; }
 
-
+        [BindProperty(SupportsGet = true)]
+        public string? SearchEmail { get; set; }
         public UserListViewModel ViewModel { get; set; } = new();
 
         public async Task<IActionResult> OnGetAsync()
         {
             const int pageSize = 10;
 
-            var dto = await _userService.GetUsersPagedAsync(SortOrder, Page, pageSize);
+            var dto = await _userService.GetUsersPagedAsync(SortOrder, Page, pageSize, SearchEmail);
             ViewModel = _mapper.Map<UserListViewModel>(dto);
 
             return Page();

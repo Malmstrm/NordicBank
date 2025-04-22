@@ -4,7 +4,7 @@ namespace Services
 {
     public interface IUserService
     {
-        Task<UserListDTO> GetUsersPagedAsync(string? sortOrder, int page, int pageSize);
+        Task<UserListDTO> GetUsersPagedAsync(string? sortOrder, int page, int pageSize, string? searchEmail = null);
         Task<UserEditDTO?> GetUserByIdAsync(string id);
         Task<bool> UpdateUserAsync(UserEditDTO dto);
         Task<bool> DeleteUserAsync(string userId, string currentUserId);
