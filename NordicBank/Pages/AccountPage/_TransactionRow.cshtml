@@ -1,7 +1,8 @@
 ﻿@model NordicBank.ViewModels.TransactionViewModel
+
 <tr>
-    <td class="text-center">@Model.Type</td>
-    <td>@Model.Description</td>
+    <td class="text-start">@Model.Description</td>
+    <td class="text-start">@Model.Type</td>
     <td class="text-end">@Model.Date.ToString("yyyy-MM-dd")</td>
     <td class="fw-semibold text-end">
         @if (Model.Amount >= 0)

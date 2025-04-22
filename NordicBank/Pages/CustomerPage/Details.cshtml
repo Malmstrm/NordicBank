@@ -251,10 +251,10 @@
                     {
                         <tr>
                             <td>@t.AccountId</td>
-                            <td>@t.Description</td>
-                            <td>@t.Type</td>
-                            <td>@t.Date.ToString("yyyy-MM-dd")</td>
-                            <td class="fw-semibold">
+                            <td class="text-start">@t.Description</td>
+                            <td class="text-start">@t.Type</td>
+                            <td class="text-end">@t.Date.ToString("yyyy-MM-dd")</td>
+                            <td class="fw-semibold text-end">
                                 @if (t.Amount >= 0)
                                 {
                                     <span class="text-success"><i class="bi bi-arrow-up-circle me-1"></i> @t.Amount.ToString("C")</span>
@@ -264,7 +264,7 @@
                                     <span class="text-danger"><i class="bi bi-arrow-down-circle me-1"></i> @t.Amount.ToString("C")</span>
                                 }
                             </td>
-                            <td>@t.Balance.ToString("C")</td>
+                            <td class="text-end">@t.Balance.ToString("C")</td>
                         </tr>
                     }
                 </tbody>
