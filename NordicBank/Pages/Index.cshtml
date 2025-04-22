@@ -1,92 +1,77 @@
 ﻿@page
 @model IndexModel
 @{
-    
+    ViewData["Title"] = "Nordic Bank Overview";
 }
 
-<!-- 🏦 Hero Text Only -->
-<div class="container text-center mt-5 mb-3">
-    <h1 class="display-5 fw-bold"><i class="bi bi-bank2 me-2"></i>Nordic Bank Overview</h1>
+<!-- 🏦 Hero -->
+<section class="text-center mt-5 mb-4">
+    <h1 class="fw-bold display-5 d-flex align-items-center justify-content-center gap-2">
+        <i class="bi bi-bank2"></i> Nordic Bank Overview
+    </h1>
     <p class="lead text-muted">Explore customer and account statistics across countries.</p>
-</div>
+</section>
 
-<!-- 📈 Summary Cards (wrapped in .container for alignment) -->
-<div class="container">
-    <div class="row mb-5">
+<!-- 📈 Summary Cards -->
+<section class="container mb-5">
+    <div class="row g-4">
         <div class="col-md-4">
-            <div class="card bg-white shadow-sm border-start border-4 border-dark">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted text-uppercase mb-1">Total Clients</h6>
-                            <h4 class="fw-bold mb-0">@Model.TotalCustomers</h4>
-                        </div>
-                        <i class="bi bi-people-fill fs-2 text-dark"></i>
+            <div class="card shadow-sm border-start border-4 border-secondary-subtle">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1">Total Clients</h6>
+                        <h4 class="fw-bold mb-0 text-dark">@Model.TotalCustomers</h4>
                     </div>
+                    <i class="bi bi-people-fill fs-2 text-dark"></i>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card bg-white shadow-sm border-start border-4 border-dark">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted text-uppercase mb-1">Total Accounts</h6>
-                            <h4 class="fw-bold mb-0">@Model.TotalAccounts</h4>
-                        </div>
-                        <i class="bi bi-credit-card fs-2 text-dark"></i>
+            <div class="card shadow-sm border-start border-4 border-secondary-subtle">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1">Total Accounts</h6>
+                        <h4 class="fw-bold mb-0 text-dark">@Model.TotalAccounts</h4>
                     </div>
+                    <i class="bi bi-credit-card fs-2 text-dark"></i>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card bg-white shadow-sm border-start border-4 border-dark">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted text-uppercase mb-1">Total Capital</h6>
-                            <h4 class="fw-bold mb-0">@Model.TotalBalance.ToString("C")</h4>
-                        </div>
-                        <i class="bi bi-currency-exchange fs-2 text-dark"></i>
+            <div class="card shadow-sm border-start border-4 border-secondary-subtle">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1">Total Capital</h6>
+                        <h4 class="fw-bold mb-0 text-dark">@Model.TotalBalance.ToString("C")</h4>
                     </div>
+                    <i class="bi bi-currency-exchange fs-2 text-dark"></i>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<style>
-    .country-card {
-        transition: all 0.3s ease-in-out;
-    }
+</section>
 
-        .country-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            border-left-color: #000 !important;
-        }
-</style>
-
-<!-- 🌍 Country Cards -->
-<div class="container">
-    <div class="row">
+<!-- 🌍 Country Overview Cards -->
+<section class="container mb-5">
+    <div class="row g-4">
         @foreach (var card in Model.CountryOverview)
         {
             <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="card bg-white shadow-sm border-start border-4 border-dark mb-4 country-card"
-                     style="cursor:pointer;" onclick="loadTopCustomers('@card.Country', '@card.CountryCode')">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
+                <div class="card shadow-sm border-start border-4 border-secondary-subtle country-card h-100"
+                     onclick="loadTopCustomers('@card.Country', '@card.CountryCode')" style="cursor: pointer;">
+                    <div class="card-body d-flex flex-column justify-content-between h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <div>
                                 <h6 class="text-muted text-uppercase mb-1">Country</h6>
                                 <h5 class="fw-bold mb-0">@card.Country</h5>
                             </div>
                             <img src="https://flagcdn.com/48x36/@(card.CountryCode.ToLower()).png"
-                                 class="rounded shadow-sm"
-                                 alt="@card.Country flag" />
+                                 class="rounded shadow-sm" alt="@card.Country flag" />
                         </div>
-                        <div class="mt-3 small">
+
+                        <div class="mt-2 small">
                             <p class="mb-1">
                                 <i class="bi bi-people-fill me-1"></i>
                                 Clients: <strong>@card.Clients</strong>
@@ -105,14 +90,13 @@
             </div>
         }
     </div>
-</div>
-
+</section>
 
 <!-- 👥 Modal for Top Customers -->
 <div class="modal fade" id="topCustomersModal" tabindex="-1" aria-labelledby="topCustomersLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content shadow-sm rounded-3">
-            <div class="modal-header bg-dark text-white border-bottom-0">
+        <div class="modal-content shadow rounded-3">
+            <div class="modal-header bg-dark text-white">
                 <h5 class="modal-title d-flex align-items-center gap-2 fw-bold" id="topCustomersLabel">
                     <img id="countryFlagPlaceholder" src="" alt="Country flag" width="32" height="24" class="rounded shadow-sm" />
                     <span>Top 10 – <span id="countryNamePlaceholder">Country</span></span>
@@ -121,7 +105,6 @@
             </div>
 
             <div class="modal-body p-0" id="topCustomersContent" style="max-height: 500px; overflow-y: auto;">
-
                 <!-- AJAX partial loads here -->
             </div>
 
@@ -133,7 +116,6 @@
         </div>
     </div>
 </div>
-
 
 @section Scripts {
     <script>
