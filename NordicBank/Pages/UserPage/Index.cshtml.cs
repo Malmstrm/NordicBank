@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using NordicBank.ViewModels;
 using Services;
+using System.Security.Claims;
 
 namespace NordicBank.Pages.UserPage
 {
@@ -22,6 +23,9 @@ namespace NordicBank.Pages.UserPage
 
         [BindProperty(SupportsGet = true)]
         public int Page { get; set; } = 1;
+        [TempData]
+        public string? StatusMessage { get; set; }
+
 
         public UserListViewModel ViewModel { get; set; } = new();
 
@@ -37,12 +41,16 @@ namespace NordicBank.Pages.UserPage
 
         public async Task<IActionResult> OnPostDeleteAsync(string id)
         {
-            var success = await _userService.DeleteUserAsync(id);
-            if (!success)
-                ModelState.AddModelError(string.Empty, "Could not delete user.");
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var success = await _userService.DeleteUserAsync(id, currentUserId);
+
+            StatusMessage = success
+                ? "✅ User deleted successfully."
+                : "❌ Could not delete user (maybe you're trying to delete yourself?).";
 
             return RedirectToPage();
         }
+
         public async Task<IActionResult> OnPostToggleStatusAsync(string id)
         {
             var success = await _userService.ToggleUserStatusAsync(id);

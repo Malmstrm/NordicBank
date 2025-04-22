@@ -3,7 +3,13 @@
 @{
     ViewData["Title"] = "Manage Users";
 }
-
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="alert alert-info alert-dismissible fade show rounded-3" role="alert">
+        <i class="bi bi-info-circle me-2"></i> @Model.StatusMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div class="container mt-5 mb-5">
     <div class="text-center mb-4">
         <h2 class="fw-semibold"><i class="bi bi-people-fill me-2"></i>Manage Users</h2>

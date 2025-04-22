@@ -86,8 +86,12 @@ namespace Services
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded;
         }
-        public async Task<bool> DeleteUserAsync(string userId)
+        public async Task<bool> DeleteUserAsync(string userId, string currentUserId)
         {
+            // 👮 Förhindra att en admin raderar sig själv
+            if (userId == currentUserId)
+                return false;
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return false;
