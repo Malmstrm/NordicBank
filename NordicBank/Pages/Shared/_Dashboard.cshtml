@@ -118,7 +118,10 @@
                         {
                             <div class="sb-sidenav-menu-heading text-dark">System</div>
 
-                            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-success">Create new user</a>
+                            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">
+                                <div class="sb-nav-link-icon text-dark"><i class="bi bi-person-plus-fill"></i></div>
+                                Register New User
+                            </a>
 
 
                             <a class="nav-link text-dark" asp-page="/UserPage/Index">
