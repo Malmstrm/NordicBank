@@ -72,3 +72,12 @@ button:focus,
 .list-group-item {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
+.page-item.active .page-link {
+    background-color: #212529 !important;
+    border-color: #212529 !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.4) !important;
+}
+.page-link:hover {
+    color: #212529;
+}

@@ -1,59 +1,38 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using NordicBank.ViewModels;
+using Services;
 
 namespace NordicBank.Pages.UserPage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        //private readonly IUserService _userService; // valfritt service-lager om du använder det
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public IndexModel(UserManager<IdentityUser> userManager)
+        public IndexModel(IUserService userService, IMapper mapper)
         {
-            _userManager = userManager;
+            _userService = userService;
+            _mapper = mapper;
         }
 
-        public List<UserViewModel> Users { get; set; } = new();
+        [BindProperty(SupportsGet = true)]
+        public string? SortOrder { get; set; }
 
-        public async Task OnGetAsync()
+        [BindProperty(SupportsGet = true)]
+        public int Page { get; set; } = 1;
+
+        public UserListViewModel ViewModel { get; set; } = new();
+
+        public async Task<IActionResult> OnGetAsync()
         {
-            var allUsers = _userManager.Users.ToList();
+            const int pageSize = 10;
 
-            foreach (var user in allUsers)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
+            var dto = await _userService.GetUsersPagedAsync(SortOrder, Page, pageSize);
+            ViewModel = _mapper.Map<UserListViewModel>(dto);
 
-                Users.Add(new UserViewModel
-                {
-                    Id = user.Id,
-                    UserName = user.UserName!,
-                    Email = user.Email!,
-                    Role = roles.FirstOrDefault() ?? "None",
-                    IsActive = true // du kan anpassa detta baserat på en IsActive-property
-                });
-            }
-        }
-
-        public async Task<IActionResult> OnPostDeleteAsync(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user is not null)
-            {
-                await _userManager.DeleteAsync(user);
-            }
-
-            return RedirectToPage();
+            return Page();
         }
     }
-
-    public class UserViewModel
-    {
-        public string Id { get; set; } = "";
-        public string UserName { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Role { get; set; } = "";
-        public bool IsActive { get; set; }
-    }
-
 }
