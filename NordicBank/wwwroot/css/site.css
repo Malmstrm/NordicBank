@@ -1,31 +1,74 @@
+/* ------------------------------
+   Base font sizing
+------------------------------ */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* ------------------------------
+   Form Floating Placeholder Behavior
+------------------------------ */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* ------------------------------
+   Buttons - Focus & Active styling
+------------------------------ */
+
+/* Ta bort eller ersätt blå fokus-glow */
+button:focus,
+.btn:focus,
+.btn-dark:focus,
+.btn:active,
+.btn-dark:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Alternativ glow för dark-knapp */
+.btn-dark:focus {
+    box-shadow: 0 0 0 0.25rem rgba(33, 37, 41, 0.4) !important;
+}
+
+/* ------------------------------
+   List Group - Active & Focus States
+------------------------------ */
+
+/* Aktiv list-länk: använd eget tema istället för blå */
+.list-group-item.active,
+.list-group-item.active:focus,
+.list-group-item.active:hover {
+    background-color: #212529 !important; /* Bootstrap dark */
+    border-color: #212529 !important;
+    color: #fff !important;
+}
+
+/* Fokus-glow på list items */
+.list-group-item:focus {
+    box-shadow: 0 0 0 0.2rem rgba(33, 37, 41, 0.25) !important;
+}
+
+/* Smidig övergång när man hovrar eller växlar state */
+.list-group-item {
+    transition: background-color 0.2s ease, color 0.2s ease;
 }

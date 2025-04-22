@@ -2,14 +2,34 @@
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }
-<ul class="nav nav-pills flex-column">
-    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Profile</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Password</a></li>
-    @if (hasExternalLogins)
-    {
-        <li id="external-logins" class="nav-item"><a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>
-    }
-    <li class="nav-item"><a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" asp-page="./TwoFactorAuthentication">Two-factor authentication</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Personal data</a></li>
-</ul>
+
+<!-- 🛠 Rubrik om du vill behålla den -->
+<h6 class="text-muted fw-bold mb-3">
+    <i class="bi bi-gear me-1"></i> Account Settings
+</h6>
+
+<!-- 💡 Korrekt struktur: card omsluter list-group -->
+<div class="card shadow-sm rounded-4 bg-light" style="border: 1px solid #cfd4da;">
+    <div class="card-header bg-dark text-white fw-semibold">
+        <i class="bi bi-gear me-1"></i> Account Settings
+    </div>
+
+    <div class="list-group list-group-flush">
+        <a class="list-group-item list-group-item-action text-dark fw-semibold d-flex align-items-center gap-2 @ManageNavPages.IndexNavClass(ViewContext)" asp-page="./Index">
+            <i class="bi bi-person-gear"></i> Profile
+        </a>
+        <a class="list-group-item list-group-item-action text-dark fw-semibold d-flex align-items-center gap-2 @ManageNavPages.EmailNavClass(ViewContext)" asp-page="./Email">
+            <i class="bi bi-envelope"></i> Email
+        </a>
+        <a class="list-group-item list-group-item-action text-dark fw-semibold d-flex align-items-center gap-2 @ManageNavPages.ChangePasswordNavClass(ViewContext)" asp-page="./ChangePassword">
+            <i class="bi bi-key"></i> Password
+        </a>
+
+        @if (hasExternalLogins)
+        {
+            <a class="list-group-item list-group-item-action text-dark fw-semibold d-flex align-items-center gap-2 @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">
+                <i class="bi bi-box-arrow-in-right"></i> External Logins
+            </a>
+        }
+    </div>
+</div>

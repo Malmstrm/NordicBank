@@ -4853,10 +4853,10 @@ textarea.form-control-lg {
   background-color: var(--bs-list-group-disabled-bg);
 }
 .list-group-item.active {
-  z-index: 2;
-  color: var(--bs-list-group-active-color);
-  background-color: var(--bs-list-group-active-bg);
-  border-color: var(--bs-list-group-active-border-color);
+    background-color: #212529;
+    border-color: #212529;
+    color: #fff;
+    font-weight: 600;
 }
 .list-group-item + .list-group-item {
   border-top-width: 0;
