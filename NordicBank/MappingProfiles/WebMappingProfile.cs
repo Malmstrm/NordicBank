@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DataAccessLayer.DTO;
+using NordicBank.Pages.UserPage;
 using NordicBank.ViewModels;
 
 namespace NordicBank.MappingProfiles
@@ -23,6 +24,8 @@ namespace NordicBank.MappingProfiles
             // Other
             CreateMap<CountryOverviewDTO, CountryOverviewViewModel>().ReverseMap();
             CreateMap<TopCustomerDTO, TopCustomerViewModel>().ReverseMap();
+            CreateMap<UserDTO, UserViewModel>();
+            CreateMap<UserListDTO, UserListViewModel>();
         }
     }
 }

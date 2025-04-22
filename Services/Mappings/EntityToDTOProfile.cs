@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DataAccessLayer.DTO;
 using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Services.Mappings
 {
@@ -27,6 +28,9 @@ namespace Services.Mappings
             // Others
             CreateMap<SuspiciousTransaction, SuspiciousTransactionDTO>().ReverseMap();
             CreateMap<ScanLog, ScanHistoryDTO>().ReverseMap();
+            CreateMap<IdentityUser, UserDTO>()
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src =>
+                    src.LockoutEnd == null || src.LockoutEnd <= DateTime.Now));
 
         }
 
