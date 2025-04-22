@@ -48,10 +48,58 @@
                                 }
                             </a>
                         </th>
-                        <th>Name</th>
-                        <th>Address</th>
-                        <th>City</th>
-                        <th>SSN</th>
+                        <th>
+                            <a asp-page="./Index" asp-route-sortColumn="Name"
+                               asp-route-sortOrder="@(Model.SortColumn == "Name" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-pageNo="@Model.CurrentPage"
+                               class="text-white text-decoration-none">
+                                Name
+                                @if (Model.SortColumn == "Name")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-page="./Index" asp-route-sortColumn="Address"
+                               asp-route-sortOrder="@(Model.SortColumn == "Address" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-pageNo="@Model.CurrentPage"
+                               class="text-white text-decoration-none">
+                                Address
+                                @if (Model.SortColumn == "Address")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-page="./Index" asp-route-sortColumn="City"
+                               asp-route-sortOrder="@(Model.SortColumn == "City" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-pageNo="@Model.CurrentPage"
+                               class="text-white text-decoration-none">
+                                City
+                                @if (Model.SortColumn == "City")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-page="./Index" asp-route-sortColumn="SSN"
+                               asp-route-sortOrder="@(Model.SortColumn == "SSN" && Model.SortOrder == "asc" ? "desc" : "asc")"
+                               asp-route-searchTerm="@Model.SearchTerm"
+                               asp-route-pageNo="@Model.CurrentPage"
+                               class="text-white text-decoration-none">
+                                SSN
+                                @if (Model.SortColumn == "SSN")
+                                {
+                                    <i class="bi @(Model.SortOrder == "asc" ? "bi-chevron-up" : "bi-chevron-down")"></i>
+                                }
+                            </a>
+                        </th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
