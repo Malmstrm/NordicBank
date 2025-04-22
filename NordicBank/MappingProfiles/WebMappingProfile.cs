@@ -26,6 +26,7 @@ namespace NordicBank.MappingProfiles
             CreateMap<TopCustomerDTO, TopCustomerViewModel>().ReverseMap();
             CreateMap<UserDTO, UserViewModel>();
             CreateMap<UserListDTO, UserListViewModel>();
+            CreateMap<UserEditDTO, UserEditViewModel>().ReverseMap();
         }
     }
 }

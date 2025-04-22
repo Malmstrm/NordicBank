@@ -1,0 +1,69 @@
+﻿@page
+@model NordicBank.Pages.UserPage.EditModel
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-semibold"><i class="bi bi-pencil-square me-2"></i>Edit User</h2>
+        <p class="text-muted mb-0">Modify user account details and permissions.</p>
+    </div>
+
+    <div class="card shadow-sm rounded-4 bg-light" style="border: 1px solid #cfd4da;">
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                <input type="hidden" asp-for="ViewModel.Id" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" asp-for="ViewModel.Email">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
+                        <input asp-for="ViewModel.Email" class="form-control" placeholder="User email" />
+                    </div>
+                    <span asp-validation-for="ViewModel.Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" asp-for="ViewModel.Role">Role</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-shield-lock"></i></span>
+                        <select asp-for="ViewModel.Role" class="form-select">
+                            @foreach (var role in Model.ViewModel.AvailableRoles)
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </select>
+                    </div>
+                    <span asp-validation-for="ViewModel.Role" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Status</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" asp-for="ViewModel.IsActive" type="checkbox" role="switch" />
+                        <label class="form-check-label" asp-for="ViewModel.IsActive">
+                            @if (Model.ViewModel.IsActive)
+                            {
+                                <span class="text-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger">Inactive</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-dark w-100 py-3 rounded-4 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-save2"></i>
+                    <span class="fw-semibold">Save Changes</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

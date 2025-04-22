@@ -34,5 +34,22 @@ namespace NordicBank.Pages.UserPage
 
             return Page();
         }
+
+        public async Task<IActionResult> OnPostDeleteAsync(string id)
+        {
+            var success = await _userService.DeleteUserAsync(id);
+            if (!success)
+                ModelState.AddModelError(string.Empty, "Could not delete user.");
+
+            return RedirectToPage();
+        }
+        public async Task<IActionResult> OnPostToggleStatusAsync(string id)
+        {
+            var success = await _userService.ToggleUserStatusAsync(id);
+            if (!success)
+                ModelState.AddModelError(string.Empty, "Could not update user status.");
+
+            return RedirectToPage();
+        }
     }
 }
