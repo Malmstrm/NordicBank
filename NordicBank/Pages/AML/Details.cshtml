@@ -4,118 +4,119 @@
     ViewData["Title"] = "AML Scan Details";
 }
 
-<div class="card shadow-sm mt-4 mb-4 border-start border-4 border-dark w-100">
-    <!-- 🔲 Header -->
-    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">
-            <i class="bi bi-flag me-2"></i>Suspicious Transactions - @Model.Country
-        </h5>
-        <small class="text-white-50">
+<!-- 🚩 Page Header -->
+<section class="mt-5 mb-4">
+    <div class="text-center mb-3 position-relative">
+        <h4 class="fw-semibold d-flex align-items-center justify-content-center gap-2 mb-1">
+            <i class="bi bi-flag"></i> Suspicious Transactions – @Model.Country
+        </h4>
+        <small class="text-muted">
             <i class="bi bi-calendar-range me-1"></i>
             Scan period: @Model.From.ToString("yyyy-MM-dd") → @Model.To.ToString("yyyy-MM-dd")
         </small>
-        <a asp-page="/AML/Index" class="btn btn-outline-light btn-sm">
+
+        <!-- Back button -->
+        <a asp-page="/AML/Index"
+           class="btn btn-outline-dark btn-sm position-absolute end-0 top-0">
             <i class="bi bi-arrow-left"></i> Back
         </a>
-
     </div>
 
-    <!-- 📋 Content -->
-    <div class="card-body px-0 pt-0">
-        @if (!Model.PagedTransactions.Any())
-        {
-            <div class="px-3 py-2">
-                <p class="text-success mb-0">No suspicious transactions found.</p>
-            </div>
-        }
-        else
-        {
-            <!-- 🧾 Table -->
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered table-sm align-middle table-striped mb-0">
-                    <thead class="table-dark text-center">
+    <div class="border-bottom border-2 mb-4"></div>
+</section>
+
+<!-- 📋 Scan Results Table -->
+<section class="mb-5">
+    @if (!Model.PagedTransactions.Any())
+    {
+        <p class="text-center text-success">No suspicious transactions found during the selected period.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered table-sm align-middle table-striped mb-0">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th>Customer</th>
+                        <th>Account</th>
+                        <th>Transaction</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tx in Model.PagedTransactions)
+                    {
                         <tr>
-                            <th>Customer</th>
-                            <th>Account</th>
-                            <th>Transaction</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                            <th>Reason</th>
+                            <td class="text-start">@tx.CustomerName (@tx.CustomerId)</td>
+                            <td class="text-center">@tx.AccountId</td>
+                            <td class="text-center">@tx.TransactionId</td>
+                            <td class="text-end fw-semibold">@tx.Amount.ToString("C")</td>
+                            <td class="text-end">@tx.Date.ToString("yyyy-MM-dd")</td>
+                            <td class="text-center">
+                                @switch (tx.Reason)
+                                {
+                                    case "HighAmount":
+                                        <span class="text-danger" title="Single transaction > 15,000">
+                                            <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+                                        </span>
+                                        break;
+
+                                    case "WindowSum":
+                                        <span class="text-warning" title="Total > 23,000 in 72h window">
+                                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                                        </span>
+                                        break;
+
+                                    default:
+                                        <span class="text-muted" title="Unknown reason">
+                                            <i class="bi bi-question-circle-fill fs-5"></i>
+                                        </span>
+                                        break;
+                                }
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var tx in Model.PagedTransactions)
-                        {
-                            <tr>
-                                <td>@tx.CustomerName (@tx.CustomerId)</td>
-                                <td>@tx.AccountId</td>
-                                <td>@tx.TransactionId</td>
-                                <td>@tx.Amount.ToString("C")</td>
-                                <td>@tx.Date.ToString("yyyy-MM-dd")</td>
-                                <td class="text-center">
-                                    @switch (tx.Reason)
-                                    {
-                                        case "HighAmount":
-                                            <span class="text-danger" title="Single transaction > 15,000">
-                                                <i class="bi bi-exclamation-octagon-fill fs-5"></i>
-                                            </span>
-                                            break;
-
-                                        case "WindowSum":
-                                            <span class="text-warning" title="Total > 23,000 in 72h window">
-                                                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-                                            </span>
-                                            break;
-
-                                        default:
-                                            <span class="text-muted" title="Unknown reason">
-                                                <i class="bi bi-question-circle-fill fs-5"></i>
-                                            </span>
-                                            break;
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- 📄 Pagination -->
-            <nav aria-label="AML pagination" class="px-3">
-                <ul class="pagination justify-content-center mt-3">
-                    @if (Model.CurrentPage > 1)
-                    {
-                        <li class="page-item">
-                            <a class="page-link text-dark"
-                               asp-page="./Details"
-                               asp-route-country="@Model.Country"
-                               asp-route-from="@Model.From.ToString("yyyy-MM-dd")"
-                               asp-route-to="@Model.To.ToString("yyyy-MM-dd")"
-                               asp-route-pageNo="@(Model.CurrentPage - 1)">
-                                « Previous
-                            </a>
-                        </li>
                     }
+                </tbody>
+            </table>
+        </div>
 
-                    <li class="page-item disabled">
-                        <span class="page-link">Page @Model.CurrentPage of @Model.TotalPages</span>
+        <!-- 📄 Pagination -->
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link text-dark"
+                           asp-page="./Details"
+                           asp-route-country="@Model.Country"
+                           asp-route-from="@Model.From.ToString("yyyy-MM-dd")"
+                           asp-route-to="@Model.To.ToString("yyyy-MM-dd")"
+                           asp-route-pageNo="@(Model.CurrentPage - 1)">
+                            « Previous
+                        </a>
                     </li>
+                }
 
-                    @if (Model.CurrentPage < Model.TotalPages)
-                    {
-                        <li class="page-item">
-                            <a class="page-link text-dark"
-                               asp-page="./Details"
-                               asp-route-country="@Model.Country"
-                               asp-route-from="@Model.From.ToString("yyyy-MM-dd")"
-                               asp-route-to="@Model.To.ToString("yyyy-MM-dd")"
-                               asp-route-pageNo="@(Model.CurrentPage + 1)">
-                                Next »
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </nav>
-        }
-    </div>
-</div>
+                <li class="page-item disabled">
+                    <span class="page-link">Page @Model.CurrentPage of @Model.TotalPages</span>
+                </li>
+
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link text-dark"
+                           asp-page="./Details"
+                           asp-route-country="@Model.Country"
+                           asp-route-from="@Model.From.ToString("yyyy-MM-dd")"
+                           asp-route-to="@Model.To.ToString("yyyy-MM-dd")"
+                           asp-route-pageNo="@(Model.CurrentPage + 1)">
+                            Next »
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</section>
