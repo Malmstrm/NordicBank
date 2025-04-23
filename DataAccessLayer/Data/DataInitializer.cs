@@ -15,8 +15,6 @@ namespace DataAccessLayer.Data
         }
         public void MigrateData()
         {
-            // Kommentera bort när man deployar till Azure!
-            // _dbContext.Database.Migrate();
 
             SeedData();
             _dbContext.SaveChanges();
