@@ -6,20 +6,20 @@ Ett fullfjlädrat banksystem byggt i ASP.NET Core Razor Pages med rollstyrd åtk
 NordicBankSolution
 ├── NordicBank/                # UI (Razor Pages med Bootstrap)
 │   ├── Pages/                 # Kundsidor, rapporter, dashboards
-│   ├── ViewModel/            # ViewModels för vyer (ingen entitet i vyer!)
-│   └── wwwroot/              # CSS, JS, bilder
+│   ├── ViewModel/             # ViewModels för vyer (ingen entitet i vyer!)
+│   └── wwwroot/               # CSS, JS, bilder
 │
-├── Service/                  # Affärslogik
-│   ├── Interfaces/           # Ex. ICustomerService.cs
-│   └── Services/             # Implementationer för tjänster (Customer, Account, AML, etc)
+├── Service/                   # Affärslogik
+│   ├── Interfaces/            # Ex. ICustomerService.cs
+│   └── Services/              # Implementationer för tjänster (Customer, Account, AML, etc)
 │
-├── DAL/                      # Data access med Entity Framework Core
-│   ├── Data/                 # DbContext och konfigurationer
-│   ├── DTO/                  # Data Transfer Objects
-│   ├── Models/               # Domänmodeller
-│   └── Migration/            # EF Core migrationer
+├── DAL/                       # Data access med Entity Framework Core
+│   ├── Data/                  # DbContext och konfigurationer
+│   ├── DTO/                   # Data Transfer Objects
+│   ├── Models/                # Domänmodeller
+│   └── Migration/             # EF Core migrationer
 │
-└── NordicBank.Console/       # Console app för AML-scanning (se nedan)
+└── NordicBank.Console/        # Console app för AML-scanning (se nedan)
 ✨ Funktioner
 
 🔐 ASP.NET Core Identity + rollbaserad inloggning (Admin / Cashier)
