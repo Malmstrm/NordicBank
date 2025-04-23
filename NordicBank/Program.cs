@@ -38,10 +38,18 @@ builder.Services.AddTransient<IScanResultFactory, ScanResultFactory>();
 
 var app = builder.Build();
 
+// Behövs för Azure!
 using (var scope = app.Services.CreateScope())
 {
-    scope.ServiceProvider.GetService<DataInitializer>().SeedData();
+    var dbContext = scope.ServiceProvider.
+         GetRequiredService<NordicBankAppDataContext>();
+    if (dbContext.Database.IsRelational())
+    {
+        dbContext.Database.Migrate();
+        
+    }
 }
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

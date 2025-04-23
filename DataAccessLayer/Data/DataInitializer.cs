@@ -15,9 +15,10 @@ namespace DataAccessLayer.Data
         }
         public void SeedData()
         {
-            _dbContext.Database.Migrate();
+            //_dbContext.Database.Migrate();
             SeedRoles();
             SeedUsers();
+            _dbContext.SaveChanges();
         }
 
         // Här finns möjlighet att uppdatera dina användares loginuppgifter
