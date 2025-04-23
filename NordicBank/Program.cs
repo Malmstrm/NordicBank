@@ -1,4 +1,4 @@
-using DataAccessLayer.Data;
+﻿using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Services;
@@ -38,7 +38,7 @@ builder.Services.AddTransient<IScanResultFactory, ScanResultFactory>();
 
 var app = builder.Build();
 
-// Beh�vs f�r Azure!
+// Behövs för Azure!
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.
@@ -46,8 +46,28 @@ using (var scope = app.Services.CreateScope())
     if (dbContext.Database.IsRelational())
     {
         dbContext.Database.Migrate();
-        
     }
+}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var dbContext = scope.ServiceProvider.GetRequiredService<NordicBankAppDataContext>();
+//    try
+//    {
+//        if (dbContext.Database.IsRelational())
+//        {
+//            dbContext.Database.Migrate();
+//        }
+//    }
+//    catch (Exception ex)
+//    {
+//        Console.WriteLine("🔥 Migration error: " + ex.Message);
+//        // Du kan även skriva till en loggfil om du vill se mer
+//    }
+//}
+
+using (var scope = app.Services.CreateScope())
+{
+    scope.ServiceProvider.GetService<DataInitializer>().MigrateData();
 }
 
 

@@ -13,12 +13,20 @@ namespace DataAccessLayer.Data
             _dbContext = dbContext;
             _userManager = userManager;
         }
+        public void MigrateData()
+        {
+            // Kommentera bort när man deployar till Azure!
+            // _dbContext.Database.Migrate();
+
+            SeedData();
+            _dbContext.SaveChanges();
+        }
+
         public void SeedData()
         {
             //_dbContext.Database.Migrate();
             SeedRoles();
             SeedUsers();
-            _dbContext.SaveChanges();
         }
 
         // Här finns möjlighet att uppdatera dina användares loginuppgifter
